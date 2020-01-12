@@ -131,3 +131,6 @@ dmypy.json
 
 # History trackers
 *_history.txt
+
+# FarmOS Cfg
+farmos.cfg
