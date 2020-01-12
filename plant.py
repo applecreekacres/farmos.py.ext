@@ -3,75 +3,9 @@
 import logging
 from datetime import date, datetime, timedelta
 
-from prompt_toolkit import prompt
-from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
-from prompt_toolkit.completion import WordCompleter
-from prompt_toolkit.history import FileHistory
-from prompt_toolkit.validation import ValidationError, Validator
-
+from ext.prompt import prompt, prompt_date, prompt_number, prompt_yes_no
+from ext.output import message, alert, debug, info
 from farm import farm
-
-
-class DateValidator(Validator):
-    def validate(self, document):
-        text = document.text
-
-        if text and not text.isdigit():
-            i = 0
-
-            # Get index of fist non numeric character.
-            # We want to move the cursor here.
-            for i, c in enumerate(text):
-                if not c.isdigit():
-                    break
-
-            raise ValidationError(message='This input contains non-numeric characters',
-                                  cursor_position=i)
-        if text and not len(text) == 8:
-            i = 0
-
-            # Get index of fist non numeric character.
-            # We want to move the cursor here.
-            for i, c in enumerate(text):
-                if not c.isdigit():
-                    break
-
-            raise ValidationError(message='This input is not 8 digits long.',
-                                  cursor_position=i)
-
-
-class NumberValidator(Validator):
-    def validate(self, document):
-        text = document.text
-
-        if text and not text.isdigit():
-            i = 0
-
-            # Get index of fist non numeric character.
-            # We want to move the cursor here.
-            for i, c in enumerate(text):
-                if not c.isdigit():
-                    break
-
-            raise ValidationError(message='This input contains non-numeric characters',
-                                  cursor_position=i)
-
-
-class YesNoValidator(Validator):
-    def validate(self, document):
-        text = document.text
-
-        if text and text not in ["y", "Y", "n", "N"]:
-            i = 0
-
-            # Get index of fist non numeric character.
-            # We want to move the cursor here.
-            for i, c in enumerate(text):
-                if not c.isdigit():
-                    break
-
-            raise ValidationError(message='Value not y or n',
-                                  cursor_position=i)
 
 
 def main():
@@ -80,9 +14,9 @@ def main():
     print("Creating a new planting...")
     my_farm = farm()
     families, fam_ids = get_crop_families(my_farm)
-    crop_family = prompt_crop_family(families)
-    crop = prompt_crop(my_farm, fam_ids, crop_family)
-    seed_date = prompt_seed_date()
+    crop_family = prompt("Crop Family", completion=families)
+    crop = prompt("Crop", completion=get_crops(my_farm, fam_ids, crop_family))
+    seed_date = prompt_date("Seed Date")
     num_seeds = 0
     if prompt_yes_no("Need help calculating needed seeds?"):
         num_beds = prompt_number("Number of beds")
@@ -93,76 +27,61 @@ def main():
         logging.info("{} seeds needed for planting.".format(num_seeds))
     else:
         num_seeds = prompt_number("Number of Seeds")
-    seed_location = prompt_location(my_farm)
-    if prompt_yes_no("Create a transplant?"):
+    seed_location = prompt("Seed Location", get_locations(my_farm))
+    transplant = prompt_yes_no("Create a transplant?")
+    crop_info = get_crop_info(crop, my_farm)
+    if transplant:
         if prompt_yes_no("Base transplant date on provided crop data?"):
-            transplant_date = get_transplant_date(crop, my_farm, seed_date)
+            transplant_date = get_transplant_date(crop_info, seed_date)
             if not transplant_date:
-                print("Transplant data not found, please provide date.")
-                transplant_date = prompt_transplant_date()
+                alert("Transplant data not found, please provide date.")
+                transplant_date = prompt_date("Transplant Date")
     if prompt_yes_no("Create a harvest?"):
-        pass
-    print("Review the following information before it is published.")
+        if prompt_yes_no("Base harvest date on crop date of maturity?"):
+            if transplant:
+                harvest_date = get_harvest_date(crop_info, transplant_date)
+            else:
+                harvest_date = get_harvest_date(crop_info, seed_date)
+            if not harvest_date:
+                alert("Maturity data not found. Please provid date.")
+                harvest_date = prompt_date("Harvest Date")
+        else:
+            harvest_date = prompt_date("Harvest Date")
+    alert("Review the following information before it is published.")
 
 
-def get_transplant_date(crop_name, my_farm, seed_date):
+def get_crop_info(crop_name, my_farm):
     crops = my_farm.term.get("farm_crops")
     for crop in crops['list']:
         if crop_name in crop['name']:
-            trans = crop['transplant_days']
-            if not trans:
-                return trans
-            else:
-                return seed_date + timedelta(days=int(trans))
+            return crop
     return None
 
 
-def prompt_location(my_farm):
+def get_transplant_date(crop, seed_date):
+    if crop:
+        trans = crop['transplant_days']
+        if not trans:
+            return trans
+        else:
+            return seed_date + timedelta(days=int(trans))
+    return None
+
+
+def get_harvest_date(crop_info, base_date):
+    mature = crop_info['maturity_days']
+    if mature:
+        return base_date + timedelta(days=int(mature))
+    else:
+        return None
+
+
+def get_locations(my_farm):
     area_names = []
     areas = my_farm.area.get()
     for area in areas['list']:
         area_names.append(area['name'])
-    area_completer = WordCompleter(area_names)
-    location = prompt("Location of seeding >",
-                      auto_suggest=AutoSuggestFromHistory(),
-                      history=FileHistory("farm_area_history.txt"),
-                      completer=area_completer)
-    logging.info("Location: {}".format(location))
-    return location
-
-
-def prompt_number(message: str):
-    num = int(prompt("{} >".format(message), validator=NumberValidator()))
-    logging.info("{}: {}".format(message, num))
-    return num
-
-
-def prompt_yes_no(message: str):
-    response = prompt("{} >".format(message), validator=YesNoValidator())
-    return True if response in ['y', 'Y'] else False
-
-
-def prompt_seed_date():
-    seed_date = prompt("Seed Date [DDMMYYYY] >", validator=DateValidator())
-    str_date = datetime.strptime(seed_date, "%m%d%Y").date()
-    logging.info("Provided date {}".format(str_date))
-    return str_date
-
-
-def prompt_transplant_date():
-    trans_date = prompt("Transplant Date [DDMMYYYY] >", validator=DateValidator())
-    str_date = datetime.strptime(trans_date, "%m%d%Y").date()
-    logging.info("Provided date {}".format(str_date))
-    return str_date
-
-
-def prompt_crop_family(families):
-    crop_family = prompt("Crop Family >", completer=WordCompleter(families),
-                         auto_suggest=AutoSuggestFromHistory(),
-                         search_ignore_case=True,
-                         history=FileHistory("crop_family_history.txt"))
-    logging.info("Crop Family: {}".format(crop_family))
-    return crop_family
+    return area_names
 
 
 def get_crop_families(my_farm):
@@ -172,12 +91,12 @@ def get_crop_families(my_farm):
     for fam in crop_fams['list']:
         families.append(fam['name'])
         fam_ids[fam['name']] = fam['tid']
-    logging.info("Crop Families: {}".format(families))
-    logging.info("Crop Family IDs: {}".format(fam_ids))
+    info("Crop Families: {}".format(families))
+    info("Crop Family IDs: {}".format(fam_ids))
     return families, fam_ids
 
 
-def prompt_crop(my_farm, fam_ids, crop_family):
+def get_crops(my_farm, fam_ids, crop_family):
     crops = my_farm.term.get("farm_crops")
     crop_names = []
     for crop in crops['list']:
@@ -185,12 +104,7 @@ def prompt_crop(my_farm, fam_ids, crop_family):
             if crop['crop_family']['id'] == fam_ids[crop_family]:
                 name = crop['name'][str(crop['name']).index('-')+2:]
                 crop_names.append(name)
-    crop_complete = WordCompleter(crop_names)
-    crop = prompt("Crop >", completer=crop_complete, search_ignore_case=True,
-                  auto_suggest=AutoSuggestFromHistory(),
-                  history=FileHistory("crop_history.txt"))
-    logging.info("Crop: {}".format(crop))
-    return crop
+    return crop_names
 
 
 if __name__ == "__main__":
