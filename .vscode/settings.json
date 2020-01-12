@@ -1,0 +1,8 @@
+{
+    "python.linting.pycodestyleEnabled": true,
+    "python.linting.pydocstyleEnabled": true,
+    "python.pythonPath": "/home/lucas/.local/share/virtualenvs/farmer-sNy0C2RQ/bin/python",
+    "editor.rulers": [
+        80
+    ]
+}
