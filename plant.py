@@ -94,6 +94,11 @@ def main():
     else:
         num_seeds = prompt_number("Number of Seeds")
     location = prompt_location(my_farm)
+    if prompt_yes_no("Create a transplant?"):
+        pass
+    if prompt_yes_no("Create a harvest?"):
+        pass
+    print("Review the following information before it is published.")
 
 
 def prompt_location(my_farm):
