@@ -110,7 +110,7 @@ def prompt_location(my_farm):
     return location
 
 
-def prompt_number(message: str, **kwargs):
+def prompt_number(message: str):
     num = int(prompt("{} >".format(message), validator=NumberValidator()))
     logging.info("{}: {}".format(message, num))
     return num
