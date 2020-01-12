@@ -1,7 +1,7 @@
 """Create a new Planting."""
 
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from prompt_toolkit import prompt
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
@@ -93,12 +93,28 @@ def main():
         logging.info("{} seeds needed for planting.".format(num_seeds))
     else:
         num_seeds = prompt_number("Number of Seeds")
-    location = prompt_location(my_farm)
+    seed_location = prompt_location(my_farm)
     if prompt_yes_no("Create a transplant?"):
-        pass
+        if prompt_yes_no("Base transplant date on provided crop data?"):
+            transplant_date = get_transplant_date(crop, my_farm, seed_date)
+            if not transplant_date:
+                print("Transplant data not found, please provide date.")
+                transplant_date = prompt_transplant_date()
     if prompt_yes_no("Create a harvest?"):
         pass
     print("Review the following information before it is published.")
+
+
+def get_transplant_date(crop_name, my_farm, seed_date):
+    crops = my_farm.term.get("farm_crops")
+    for crop in crops['list']:
+        if crop_name in crop['name']:
+            trans = crop['transplant_days']
+            if not trans:
+                return trans
+            else:
+                return seed_date + timedelta(days=int(trans))
+    return None
 
 
 def prompt_location(my_farm):
@@ -129,6 +145,13 @@ def prompt_yes_no(message: str):
 def prompt_seed_date():
     seed_date = prompt("Seed Date [DDMMYYYY] >", validator=DateValidator())
     str_date = datetime.strptime(seed_date, "%m%d%Y").date()
+    logging.info("Provided date {}".format(str_date))
+    return str_date
+
+
+def prompt_transplant_date():
+    trans_date = prompt("Transplant Date [DDMMYYYY] >", validator=DateValidator())
+    str_date = datetime.strptime(trans_date, "%m%d%Y").date()
     logging.info("Provided date {}".format(str_date))
     return str_date
 
