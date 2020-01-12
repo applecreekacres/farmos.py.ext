@@ -28,4 +28,5 @@ FARM.authenticate()
 
 
 def farm():
+    """Access to farm with provided credentials."""
     return FARM
