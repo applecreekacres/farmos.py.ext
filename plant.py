@@ -15,6 +15,7 @@ def main():
                         format='%(name)s - %(levelname)s - %(message)s')
     print("Creating a new planting...")
     my_farm = farm()
+    # TODO Add a request for Season
     crop = determine_crop(my_farm)
     seeding = schedule_seeding(my_farm)
     crop_info = get_crop_info(crop, my_farm)
