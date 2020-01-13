@@ -8,16 +8,17 @@ colorama.init()
 def _message(msg: str, color):
     print(color, end="")
     print(msg)
-    print(colorama.Fore.RESET)
+    print(colorama.Fore.RESET, end="")
 
 
-def message(msg: str):
-    _message(msg, colorama.Fore.WHITE)
+def message(msg: str, level=0, color=colorama.Fore.WHITE):
+    _message("{}{}".format("\t" * level, msg), color)
     logging.info(msg)
 
 
 def info(msg: str):
     logging.info(msg)
+
 
 def alert(msg: str):
     _message(msg, colorama.Fore.YELLOW)

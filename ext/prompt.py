@@ -73,7 +73,8 @@ class YesNoValidator(Validator):
 
 def prompt(message, validator=None, completion=None):
     complete = WordCompleter(completion) if completion else None
-    response = prmpt("{} >".format(message), validator=validator, completer=complete, search_ignore_case=True)
+    response = prmpt("{} >".format(message), validator=validator,
+                     completer=complete, search_ignore_case=True)
     logging.info("{}: {}".format(message, response))
     return response
 
@@ -92,5 +93,5 @@ def prompt_number(message: str):
 
 
 def prompt_yes_no(message: str):
-    response = prompt(message, validator=YesNoValidator())
+    response = prompt("{} [y/n]".format(message), validator=YesNoValidator())
     return True if response in ['y', 'Y'] else False
