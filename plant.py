@@ -21,6 +21,32 @@ def main():
     transplant = schedule_transplant(crop_info, seeding['date'], my_farm)
     harvest = schedule_harvest(transplant['date'], crop_info, seeding['date'])
     review_plan(crop, seeding, transplant, harvest)
+    planting = create_planting(my_farm, crop_info)
+    create_seeding(planting, seeding)
+    if transplant['date']:
+        create_transplant(planting, transplant)
+    if harvest['date']:
+        create_harvest(planting, harvest)
+
+
+def create_planting(farm, crop):
+    return farm.asset.send({
+        "name": "",
+        "type": "planting"
+    })
+
+
+
+def create_seeding(planting, seeding):
+    return None
+
+
+def create_transplant(planting, transplant):
+    return None
+
+
+def create_harvest(planting, transplant):
+    return None
 
 
 def review_plan(crop, seeding, transplant, harvest):
