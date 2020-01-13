@@ -7,7 +7,7 @@ import colorama
 
 from ext.output import alert, debug, info, message
 from ext.prompt import prompt, prompt_date, prompt_number, prompt_yes_no
-from farm import farm
+from ext.farm import farm
 
 
 def main():
