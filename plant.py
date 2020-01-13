@@ -15,14 +15,14 @@ def main():
                         format='%(name)s - %(levelname)s - %(message)s')
     print("Creating a new planting...")
     my_farm = farm()
-    # TODO Add a request for Season
+    season = determine_season(my_farm)
     crop = determine_crop(my_farm)
     seeding = schedule_seeding(my_farm)
     crop_info = get_crop_info(crop, my_farm)
     transplant = schedule_transplant(crop_info, seeding['date'], my_farm)
     harvest = schedule_harvest(transplant['date'], crop_info, seeding['date'])
     review_plan(crop, seeding, transplant, harvest)
-    planting = create_planting(my_farm, crop_info)
+    planting = create_planting(my_farm, crop_info, season)
     create_seeding(planting, seeding)
     if transplant['date']:
         create_transplant(planting, transplant)
@@ -30,7 +30,15 @@ def main():
         create_harvest(planting, harvest)
 
 
-def create_planting(farm, crop):
+def determine_season(farm):
+    seasons = farm.term.get("farm_season")
+    seasons_cmp = []
+    for season in seasons['list']:
+        seasons_cmp.append(season['name'])
+    return prompt("Season:", completion=seasons_cmp)
+
+
+def create_planting(farm, crop, season):
     return farm.asset.send({
         "name": "",
         "type": "planting"
