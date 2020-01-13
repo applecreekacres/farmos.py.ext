@@ -25,25 +25,30 @@ def main():
 
 def review_plan(crop, seeding, transplant, harvest):
     alert("Review the following information before it is published.")
-    message("{: <20}{: >15}".format("Planting:", crop),
+    message("{: <20}{: >20}".format("Planting:", crop),
             color=colorama.Fore.GREEN)
-    message("{: <20}{: >15}".format("Seeding Date:",
+    message("{: <20}{: >20}".format("Seeding Date:",
                                     seeding['date'].strftime("%Y-%m-%d")))
-    message("{: <20}{: >15}".format("Seeding Location:", seeding['location']))
-    message("{: <20}{: >15}".format("Seeds Needed:", seeding['seeds']))
+    message("{: <20}{: >20}".format("Seeding Location:", seeding['location']))
+    message("{: <20}{: >20}".format("Seeds Needed:", seeding['seeds']))
+    message("{: <20}{: >20}".format("Seed Lot:", seeding['lot']))
+    message("{: <20}{: >20}".format("Done:", str(seeding['done'])))
     if transplant['date']:
         message("Transplant", color=colorama.Fore.GREEN)
-        message("{: <20}{: >15}".format(
+        message("{: <20}{: >20}".format(
             "Date:", transplant['date'].strftime("%Y-%m-%d")))
-        message("{: <20}{: >15}".format("Location:", transplant['location']))
+        message("{: <20}{: >20}".format("Location:", transplant['location']))
+        message("{: <20}{: >20}".format("Done:", str(transplant['done'])))
     if harvest['date']:
         message("Harvest", color=colorama.Fore.GREEN)
-        message("{: <20}{: >15}".format(
+        message("{: <20}{: >20}".format(
             "Date:", harvest['date'].strftime("%Y-%m-%d")))
+        message("{: <20}{: >20}".format("Done:", str(harvest['done'])))
 
 
 def schedule_harvest(transplant_date, crop_info, seed_date):
     harvest_date = None
+    done = None
     if prompt_yes_no("Create a harvest?"):
         if prompt_yes_no("Base harvest date on crop date of maturity?"):
             if transplant_date:
@@ -55,12 +60,17 @@ def schedule_harvest(transplant_date, crop_info, seed_date):
                 harvest_date = prompt_date("Harvest Date")
         else:
             harvest_date = prompt_date("Harvest Date")
+        if harvest_date < datetime.now().date():
+            alert("This date occurs in the past!")
+            done = prompt_yes_no("Mark this log as Done?")
     return {
-        "date": harvest_date
+        "date": harvest_date,
+        "done": done,
     }
 
 
 def schedule_transplant(crop_info, seed_date, my_farm):
+    done = True
     transplant = prompt_yes_no("Create a transplant?")
     transplant_date = None
     location = None
@@ -70,11 +80,15 @@ def schedule_transplant(crop_info, seed_date, my_farm):
             if not transplant_date:
                 alert("Transplant data not found, please provide date.")
                 transplant_date = prompt_date("Transplant Date")
+            if transplant_date < datetime.now().date():
+                alert("This date occurs in the past!")
+                done = prompt_yes_no("Mark this log as Done?")
             location = prompt("Transplant Location",
                               completion=get_locations(my_farm))
     return {
         "date": transplant_date,
-        "location": location
+        "location": location,
+        "done": done
     }
 
 
@@ -86,7 +100,11 @@ def determine_crop(my_farm):
 
 
 def schedule_seeding(my_farm):
+    done = False
     seed_date = prompt_date("Seed Date")
+    if seed_date < datetime.now().date():
+        alert("This date occurs in the past!")
+        done = prompt_yes_no("Mark log as Done?")
     num_seeds = 0
     if prompt_yes_no("Need help calculating needed seeds?"):
         num_beds = prompt_number("Number of beds")
@@ -103,7 +121,8 @@ def schedule_seeding(my_farm):
         "date": seed_date,
         "location": seed_location,
         "lot": seed_lot,
-        "seeds": num_seeds
+        "seeds": num_seeds,
+        "done": done
     }
 
 
