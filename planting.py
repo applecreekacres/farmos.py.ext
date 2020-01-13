@@ -31,7 +31,7 @@ def main():
 
 
 def determine_season(farm):
-    seasons = [x.name for x in farm.seasons()]
+    seasons = [x.name for x in farm.seasons]
     return prompt("Season:", completion=seasons)
 
 
@@ -183,21 +183,13 @@ def get_harvest_date(crop_info, base_date):
         return None
 
 
-def get_locations(my_farm):
-    area_names = []
-    areas = my_farm.area.get()
-    for area in areas['list']:
-        area_names.append(area['name'])
-    return area_names
+def get_locations(farm):
+    return [x.name for x in farm.areas]
 
 
-def get_crop_families(my_farm):
-    crop_fams = my_farm.term.get("farm_crop_families")
-    families = []
-    fam_ids = {}
-    for fam in crop_fams['list']:
-        families.append(fam['name'])
-        fam_ids[fam['name']] = fam['tid']
+def get_crop_families(farm):
+    families = farm.crop_families
+    fam_ids = {fam.name: fam.tid for fam in families}
     info("Crop Families: {}".format(families))
     info("Crop Family IDs: {}".format(fam_ids))
     return families, fam_ids
