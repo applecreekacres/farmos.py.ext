@@ -31,11 +31,8 @@ def main():
 
 
 def determine_season(farm):
-    seasons = farm.term.get("farm_season")
-    seasons_cmp = []
-    for season in seasons['list']:
-        seasons_cmp.append(season['name'])
-    return prompt("Season:", completion=seasons_cmp)
+    seasons = [x.name for x in farm.seasons()]
+    return prompt("Season:", completion=seasons)
 
 
 def create_planting(farm, crop, season):
@@ -43,7 +40,6 @@ def create_planting(farm, crop, season):
         "name": "",
         "type": "planting"
     })
-
 
 
 def create_seeding(planting, seeding):
