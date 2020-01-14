@@ -1,18 +1,16 @@
 """Create a new Planting."""
 
-import logging
 from datetime import date, datetime, timedelta
 
 import colorama
 
-from ext.output import alert, debug, info, message
+from ext.output import alert, debug, info, message, init
 from ext.prompt import prompt, prompt_date, prompt_number, prompt_yes_no
 from ext.farm import Farm, Crop, CropFamily
 
 
 def main():
-    logging.basicConfig(filename='plant.log', filemode='w', level=logging.INFO,
-                        format='%(name)s - %(levelname)s - %(message)s')
+    init('planting.log')
     print("Creating a new planting...")
     farm = Farm()
     season = determine_season(farm)

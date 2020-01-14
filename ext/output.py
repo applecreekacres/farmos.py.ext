@@ -5,6 +5,11 @@ import logging
 colorama.init()
 
 
+def init(name: str):
+    logging.basicConfig(filename=name, filemode='w', level=logging.INFO,
+                        format='%(name)s - %(levelname)s - %(message)s')
+
+
 def _message(msg: str, color):
     print(color, end="")
     print(msg)
