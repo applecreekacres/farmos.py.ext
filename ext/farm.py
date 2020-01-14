@@ -72,12 +72,17 @@ class Crop(Dict2Obj):
         super().__init__(keys)
 
 
+class Content(Dict2Obj):
+    pass
+
+
 class Farm(farmOS):
 
     _areas = []
     _crop_families = []
     _seasons = []
     _crops = []
+    _content = None
 
     def __init__(self):
         if os.path.exists("farmos.cfg"):
@@ -103,6 +108,12 @@ class Farm(farmOS):
         self._crop_families = []
         self._seasons = []
         self._crops = []
+        self._content = None
+
+    def content(self):
+        if not self._content:
+            self._content = Content(self.info())
+        return self._content
 
     @property
     def seasons(self) -> List[Season]:
