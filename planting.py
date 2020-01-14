@@ -125,7 +125,7 @@ def schedule_transplant(crop_info, seed_date, my_farm):
 
 def determine_crop(my_farm):
     families, fam_ids = get_crop_families(my_farm)
-    crop_family = prompt("Crop Family", completion=families)
+    crop_family = prompt("Crop Family", completion=[x.name for x in families])
     crop = prompt("Crop", completion=get_crops(my_farm, fam_ids, crop_family))
     return crop
 
@@ -190,19 +190,14 @@ def get_locations(farm):
 def get_crop_families(farm):
     families = farm.crop_families
     fam_ids = {fam.name: fam.tid for fam in families}
-    info("Crop Families: {}".format(families))
+    info("Crop Families: {}".format([x.name for x in families]))
     info("Crop Family IDs: {}".format(fam_ids))
     return families, fam_ids
 
 
-def get_crops(my_farm, fam_ids, crop_family):
-    crops = my_farm.term.get("farm_crops")
-    crop_names = []
-    for crop in crops['list']:
-        if 'crop_family' in crop:
-            if crop['crop_family']['id'] == fam_ids[crop_family]:
-                name = crop['name'][str(crop['name']).index('-')+2:]
-                crop_names.append(name)
+def get_crops(farm, fam_ids, crop_family):
+    crops = farm.crops
+    crop_names = [x.name[str(x.name).index('-')+2:] for x in crops if x.crop_family and x.crop_family.id == fam_ids[crop_family]]
     return crop_names
 
 

@@ -16,9 +16,30 @@ def farm():
 
 class Dict2Obj(object):
 
-    def __init__(self, dictionary: Dict):
-        for key in dictionary:
-            setattr(self, key, dictionary[key])
+    def __init__(self, keys: Dict):
+        self._attr_key("vocabulary", keys, TaxonomyVocabulary)
+        self._attr_key("parents_all", keys, TaxonomyTerm)
+        for key in keys:
+            self._attr_key(key, keys, None, delete=False)
+
+    def _attr_key(self, key, keys, value, exist=False, delete=True):
+        if key in keys:
+            if isinstance(keys[key], list):
+                li = []
+                for item in keys[key]:
+                    if value:
+                        li.append(value(item))
+                    else:
+                        li.append(item)
+                setattr(self, key, li)
+            elif value:
+                setattr(self, key, value(keys[key]))
+            else:
+                setattr(self, key, keys[key])
+            if delete:
+                del keys[key]
+        elif exist:
+            setattr(self, key, None)
 
     # def __repr__(self):
     #     return "<%s: %s>" % type(self).__name__, self.__dict__
@@ -29,16 +50,7 @@ class Season(Dict2Obj):
 
 
 class CropFamily(Dict2Obj):
-
-    def __init__(self, keys):
-        for key in keys:
-            if key == "vocabulary":
-                setattr(self, key, TaxonomyVocabulary(keys[key]))
-            elif key == "parents_all":
-                for parent in keys[key]:
-                    setattr(self, key, TaxonomyTerm(parent))
-            else:
-                setattr(self, key, keys[key])
+    pass
 
 
 class TaxonomyVocabulary(Dict2Obj):
@@ -53,11 +65,19 @@ class Area(Dict2Obj):
     pass
 
 
+class Crop(Dict2Obj):
+
+    def __init__(self, keys):
+        self._attr_key("crop_family", keys, CropFamily, exist=True)
+        super().__init__(keys)
+
+
 class Farm(farmOS):
 
     _areas = []
     _crop_families = []
     _seasons = []
+    _crops = []
 
     def __init__(self):
         if os.path.exists("farmos.cfg"):
@@ -82,6 +102,7 @@ class Farm(farmOS):
         self._areas = []
         self._crop_families = []
         self._seasons = []
+        self._crops = []
 
     @property
     def seasons(self) -> List[Season]:
@@ -110,3 +131,12 @@ class Farm(farmOS):
             for fam in response['list']:
                 self._crop_families.append(CropFamily(fam))
         return self._crop_families
+
+    @property
+    def crops(self):
+        if not self._crops:
+            response = self.term.get("farm_crops")
+            for crop in response['list']:
+                c = Crop(crop)
+                self._crops.append(c)
+        return self._crops
