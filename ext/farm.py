@@ -133,7 +133,7 @@ class Farm(farmOS):
         return self._crop_families
 
     @property
-    def crops(self):
+    def crops(self) -> List[Crop]:
         if not self._crops:
             response = self.term.get("farm_crops")
             for crop in response['list']:
@@ -141,5 +141,5 @@ class Farm(farmOS):
                 self._crops.append(c)
         return self._crops
 
-    def create(type_name, fields):
+    def create(self, type_name, fields):
         pass
