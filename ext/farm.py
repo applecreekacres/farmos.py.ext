@@ -140,3 +140,6 @@ class Farm(farmOS):
                 c = Crop(crop)
                 self._crops.append(c)
         return self._crops
+
+    def create(type_name, fields):
+        pass
