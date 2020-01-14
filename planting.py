@@ -143,7 +143,7 @@ def schedule_seeding(farm: Farm):
         foot_rows = prompt_number("Number of feet/row")
         inch_seeds = prompt_number("Inches between seeds")
         num_seeds = (num_rows * foot_rows * 12 * num_beds) / inch_seeds
-        logging.info("{} seeds needed for planting.".format(num_seeds))
+        alert("{} seeds needed for planting.".format(num_seeds))
     else:
         num_seeds = prompt_number("Number of Seeds")
     seed_location = prompt("Seed Location", completion=get_locations(farm))
