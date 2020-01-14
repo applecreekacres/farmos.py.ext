@@ -7,22 +7,22 @@ import colorama
 
 from ext.output import alert, debug, info, message
 from ext.prompt import prompt, prompt_date, prompt_number, prompt_yes_no
-from ext.farm import farm
+from ext.farm import Farm, Crop, CropFamily
 
 
 def main():
     logging.basicConfig(filename='plant.log', filemode='w', level=logging.INFO,
                         format='%(name)s - %(levelname)s - %(message)s')
     print("Creating a new planting...")
-    my_farm = farm()
-    season = determine_season(my_farm)
-    crop = determine_crop(my_farm)
-    seeding = schedule_seeding(my_farm)
-    crop_info = get_crop_info(crop, my_farm)
-    transplant = schedule_transplant(crop_info, seeding['date'], my_farm)
+    farm = Farm()
+    season = determine_season(farm)
+    crop = determine_crop(farm)
+    seeding = schedule_seeding(farm)
+    crop_info = get_crop_info(crop, farm)
+    transplant = schedule_transplant(crop_info, seeding['date'], farm)
     harvest = schedule_harvest(transplant['date'], crop_info, seeding['date'])
     review_plan(crop, seeding, transplant, harvest)
-    planting = create_planting(my_farm, crop_info, season)
+    planting = create_planting(farm, crop_info, season)
     create_seeding(planting, seeding)
     if transplant['date']:
         create_transplant(planting, transplant)
@@ -30,12 +30,12 @@ def main():
         create_harvest(planting, harvest)
 
 
-def determine_season(farm):
+def determine_season(farm: Farm):
     seasons = [x.name for x in farm.seasons]
     return prompt("Season:", completion=seasons)
 
 
-def create_planting(farm, crop, season):
+def create_planting(farm: Farm, crop, season):
     return farm.asset.send({
         "name": "",
         "type": "planting"
@@ -77,15 +77,15 @@ def review_plan(crop, seeding, transplant, harvest):
         message("{: <20}{: >20}".format("Done:", str(harvest['done'])))
 
 
-def schedule_harvest(transplant_date, crop_info, seed_date):
+def schedule_harvest(transplant_date: datetime, crop: Crop, seed_date: datetime):
     harvest_date = None
     done = None
     if prompt_yes_no("Create a harvest?"):
         if prompt_yes_no("Base harvest date on crop date of maturity?"):
             if transplant_date:
-                harvest_date = get_harvest_date(crop_info, transplant_date)
+                harvest_date = get_harvest_date(crop, transplant_date)
             else:
-                harvest_date = get_harvest_date(crop_info, seed_date)
+                harvest_date = get_harvest_date(crop, seed_date)
             if not harvest_date:
                 alert("Maturity data not found. Please provid date.")
                 harvest_date = prompt_date("Harvest Date")
@@ -100,14 +100,14 @@ def schedule_harvest(transplant_date, crop_info, seed_date):
     }
 
 
-def schedule_transplant(crop_info, seed_date, my_farm):
+def schedule_transplant(crop: Crop, seed_date: datetime, farm: Farm):
     done = True
     transplant = prompt_yes_no("Create a transplant?")
     transplant_date = None
     location = None
     if transplant:
         if prompt_yes_no("Base transplant date on provided crop data?"):
-            transplant_date = get_transplant_date(crop_info, seed_date)
+            transplant_date = get_transplant_date(crop, seed_date)
             if not transplant_date:
                 alert("Transplant data not found, please provide date.")
                 transplant_date = prompt_date("Transplant Date")
@@ -115,7 +115,7 @@ def schedule_transplant(crop_info, seed_date, my_farm):
                 alert("This date occurs in the past!")
                 done = prompt_yes_no("Mark this log as Done?")
             location = prompt("Transplant Location",
-                              completion=get_locations(my_farm))
+                              completion=get_locations(farm))
     return {
         "date": transplant_date,
         "location": location,
@@ -123,14 +123,14 @@ def schedule_transplant(crop_info, seed_date, my_farm):
     }
 
 
-def determine_crop(my_farm):
-    families, fam_ids = get_crop_families(my_farm)
+def determine_crop(farm: Farm):
+    families, fam_ids = get_crop_families(farm)
     crop_family = prompt("Crop Family", completion=[x.name for x in families])
-    crop = prompt("Crop", completion=get_crops(my_farm, fam_ids, crop_family))
+    crop = prompt("Crop", completion=get_crops(farm, fam_ids, crop_family))
     return crop
 
 
-def schedule_seeding(my_farm):
+def schedule_seeding(farm: Farm):
     done = False
     seed_date = prompt_date("Seed Date")
     if seed_date < datetime.now().date():
@@ -146,7 +146,7 @@ def schedule_seeding(my_farm):
         logging.info("{} seeds needed for planting.".format(num_seeds))
     else:
         num_seeds = prompt_number("Number of Seeds")
-    seed_location = prompt("Seed Location", completion=get_locations(my_farm))
+    seed_location = prompt("Seed Location", completion=get_locations(farm))
     seed_lot = prompt("Seed Lot Number")
     return {
         "date": seed_date,
@@ -157,17 +157,17 @@ def schedule_seeding(my_farm):
     }
 
 
-def get_crop_info(crop_name, my_farm):
-    crops = my_farm.term.get("farm_crops")
-    for crop in crops['list']:
-        if crop_name in crop['name']:
+def get_crop_info(crop_name: str, farm: Farm) -> Crop:
+    crops = farm.crops
+    for crop in crops:
+        if crop_name in crop.name:
             return crop
     return None
 
 
-def get_transplant_date(crop, seed_date):
+def get_transplant_date(crop: Crop, seed_date: datetime) -> datetime:
     if crop:
-        trans = crop['transplant_days']
+        trans = crop.transplant_days
         if not trans:
             return trans
         else:
@@ -175,19 +175,19 @@ def get_transplant_date(crop, seed_date):
     return None
 
 
-def get_harvest_date(crop_info, base_date):
-    mature = crop_info['maturity_days']
+def get_harvest_date(crop: Crop, base_date) -> datetime:
+    mature = crop.maturity_days
     if mature:
         return base_date + timedelta(days=int(mature))
     else:
         return None
 
 
-def get_locations(farm):
+def get_locations(farm: Farm):
     return [x.name for x in farm.areas]
 
 
-def get_crop_families(farm):
+def get_crop_families(farm: Farm):
     families = farm.crop_families
     fam_ids = {fam.name: fam.tid for fam in families}
     info("Crop Families: {}".format([x.name for x in families]))
@@ -195,7 +195,7 @@ def get_crop_families(farm):
     return families, fam_ids
 
 
-def get_crops(farm, fam_ids, crop_family):
+def get_crops(farm: Farm, fam_ids, crop_family):
     crops = farm.crops
     crop_names = [x.name[str(x.name).index('-')+2:] for x in crops if x.crop_family and x.crop_family.id == fam_ids[crop_family]]
     return crop_names
