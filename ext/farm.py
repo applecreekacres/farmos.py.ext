@@ -1,8 +1,10 @@
 """Main farm access."""
 
-from farmOS import farmOS
 import os
 from typing import Dict, List
+
+from farmOS import farmOS
+from farmOS.client import BaseAPI
 
 HOST = None
 USER = None
@@ -14,26 +16,52 @@ def farm():
     return Farm()
 
 
-class Dict2Obj(object):
+def _ref_key(obj, farm, keys: Dict, key: str, attr_class):
+    if keys[key]['id']:
+        setattr(obj, key, attr_class(farm, id_field=keys[key]['id']))
+    del keys[key]
 
-    def __init__(self, keys: Dict):
-        self._attr_key("vocabulary", keys, TaxonomyVocabulary)
-        self._attr_key("parents_all", keys, TaxonomyTerm)
+
+def _ref_key_list(obj, farm, key, keys_list, attr_class, exist=False):
+    if keys_list[key]:
+        if isinstance(keys_list[key], list):
+            li = []
+            for item in keys_list[key]:
+                it = farm.get(int(item['id']))
+                li.append(attr_class(it))
+            setattr(obj, key, li)
+        del keys_list[key]
+
+
+class FarmObj(object):
+
+    _farm = None
+
+    _ref_objs = {}
+
+    def __init__(self, farm, keys: Dict = None):
+        self._farm = farm
+        if keys:
+            self._attr_keys(keys)
+
+    def __getattr__(self, name):
+        if name in self._ref_objs:
+            item = self._farm.term.get(int(self._ref_objs[name]['id']))
+            setattr(self, name, FarmObj(self, keys=item))
+
+    def _attr_keys(self, keys):
         for key in keys:
             self._attr_key(key, keys, None, delete=False)
 
-    def _attr_key(self, key, keys, value, exist=False, delete=True):
+    def _attr_key(self, key, keys, exist=False, delete=True):
         if key in keys:
             if isinstance(keys[key], list):
                 li = []
                 for item in keys[key]:
-                    if value:
-                        li.append(value(item))
-                    else:
-                        li.append(item)
+                    li.append(item)
                 setattr(self, key, li)
-            elif value:
-                setattr(self, key, value(keys[key]))
+            elif isinstance(keys[key], dict):
+                self._ref_objs[key] = keys[key]
             else:
                 setattr(self, key, keys[key])
             if delete:
@@ -41,38 +69,48 @@ class Dict2Obj(object):
         elif exist:
             setattr(self, key, None)
 
-    # def __repr__(self):
-    #     return "<%s: %s>" % type(self).__name__, self.__dict__
 
-
-class Season(Dict2Obj):
+class Term(FarmObj):
     pass
 
 
-class CropFamily(Dict2Obj):
+class Log(FarmObj):
     pass
 
 
-class TaxonomyVocabulary(Dict2Obj):
+class Asset(FarmObj):
     pass
 
 
-class TaxonomyTerm(Dict2Obj):
+class Season(Term):
     pass
 
 
-class Area(Dict2Obj):
+class CropFamily(Term):
     pass
 
 
-class Crop(Dict2Obj):
-
-    def __init__(self, keys):
-        self._attr_key("crop_family", keys, CropFamily, exist=True)
-        super().__init__(keys)
+class Area(Asset):
+    pass
 
 
-class Content(Dict2Obj):
+class Crop(Term):
+    pass
+
+
+class Content(FarmObj):
+    pass
+
+
+class Equipment(Asset):
+    pass
+
+
+class Planting(Asset):
+    pass
+
+
+class User(FarmObj):
     pass
 
 
@@ -83,6 +121,8 @@ class Farm(farmOS):
     _seasons = []
     _crops = []
     _content = None
+    _equipment = []
+    _planting = []
 
     def __init__(self):
         if os.path.exists("farmos.cfg"):
@@ -109,10 +149,12 @@ class Farm(farmOS):
         self._seasons = []
         self._crops = []
         self._content = None
+        self._equipment = []
+        self._planting = []
 
     def content(self):
         if not self._content:
-            self._content = Content(self.info())
+            self._content = Content(self, keys=self.info())
         return self._content
 
     @property
@@ -120,7 +162,7 @@ class Farm(farmOS):
         if not self._seasons:
             response = self.term.get("farm_season")
             for season in response['list']:
-                self._seasons.append(Season(season))
+                self._seasons.append(Season(season, self))
         return self._seasons
 
     @property
@@ -132,7 +174,7 @@ class Farm(farmOS):
         if not self._areas:
             response = self.area.get()
             for area in response['list']:
-                self._areas.append(Area(area))
+                self._areas.append(Area(self, keys=area))
         return self._areas
 
     @property
@@ -140,7 +182,7 @@ class Farm(farmOS):
         if not self._crop_families:
             response = self.term.get("farm_crop_families")
             for fam in response['list']:
-                self._crop_families.append(CropFamily(fam))
+                self._crop_families.append(CropFamily(self, keys=fam))
         return self._crop_families
 
     @property
@@ -148,9 +190,29 @@ class Farm(farmOS):
         if not self._crops:
             response = self.term.get("farm_crops")
             for crop in response['list']:
-                c = Crop(crop)
+                c = Crop(self, crop)
                 self._crops.append(c)
         return self._crops
+
+    @property
+    def equipment(self):
+        if not self._equipment:
+            response = self.asset.get({
+                'type': 'equipment'
+            })
+            for equip in response['list']:
+                self._equipment.append(Equipment(self, equip))
+        return self._equipment
+
+    @property
+    def planting(self):
+        if not self._planting:
+            response = self.asset.get({
+                'type': 'planting'
+            })
+            for planting in response['list']:
+                self._planting.append(Planting(planting, self))
+        return self._planting
 
     def create(self, type_name, fields):
         pass
