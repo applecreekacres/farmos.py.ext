@@ -27,4 +27,4 @@ jobs:
         pipenv install
     - name: Lint with PyCodeStyle
       run: |
-        pipenv run pycodestyle
+        pipenv run pycodestyle .
