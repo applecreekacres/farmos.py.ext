@@ -17,6 +17,7 @@ def farm():
 
 
 def _ref_key(obj, farm, keys: Dict, key: str, attr_class):
+    
     if keys[key]['id']:
         setattr(obj, key, attr_class(farm, id_field=keys[key]['id']))
     del keys[key]
@@ -47,7 +48,7 @@ class FarmObj(object):
     def __getattr__(self, name):
         if name in self._ref_objs:
             item = self._farm.term.get(int(self._ref_objs[name]['id']))
-            setattr(self, name, FarmObj(self, keys=item))
+            setattr(self, name, FarmObj(self._farm, keys=item))
 
     def _attr_keys(self, keys):
         for key in keys:
@@ -58,7 +59,15 @@ class FarmObj(object):
             if isinstance(keys[key], list):
                 li = []
                 for item in keys[key]:
-                    li.append(item)
+                    if isinstance(item, dict):
+                        if 'id' in item:
+                            refitem = self._farm.term.get(int(item['id']))
+                            obj = FarmObj(self._farm, keys=refitem)
+                        else:
+                            obj = FarmObj(self._farm, keys=item)
+                        li.append(obj)
+                    else:
+                        li.append(item)
                 setattr(self, key, li)
             elif isinstance(keys[key], dict):
                 self._ref_objs[key] = keys[key]
@@ -68,6 +77,12 @@ class FarmObj(object):
                 del keys[key]
         elif exist:
             setattr(self, key, None)
+
+    def _get_obj(self, item):
+        ref = None
+        if item['resource'] == 'taxonomy_term':
+            ref = self._farm.term.get(int(item['id']))
+        # elif item['resource'] ==
 
 
 class Term(FarmObj):
@@ -114,6 +129,10 @@ class User(FarmObj):
     pass
 
 
+class Unit(FarmObj):
+    pass
+
+
 class Farm(farmOS):
 
     _areas = []
@@ -123,6 +142,8 @@ class Farm(farmOS):
     _content = None
     _equipment = []
     _planting = []
+    _expenses = []
+    _units = []
 
     def __init__(self):
         if os.path.exists("farmos.cfg"):
@@ -211,8 +232,26 @@ class Farm(farmOS):
                 'type': 'planting'
             })
             for planting in response['list']:
-                self._planting.append(Planting(planting, self))
+                self._planting.append(Planting(self, planting))
         return self._planting
 
     def create(self, type_name, fields):
         pass
+
+    @property
+    def expense_logs(self):
+        logs = self.log.get({
+            'type': 'farm_activity'
+        })
+        for log in logs['list']:
+            obj = Log(self, log)
+            if True:
+                self._expenses.append(obj)
+        return self._expenses
+
+    @property
+    def units(self):
+        units = self.term.get('farm_quantity_units')
+        for unit in units['list']:
+            self._units.append(Unit(self, unit))
+        return self._units
