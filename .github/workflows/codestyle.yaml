@@ -1,5 +1,5 @@
 name: Style
-on push:
+on: push
 jobs:
   style:
     runs-on: ubuntu-latest
