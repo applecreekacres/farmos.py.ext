@@ -1,7 +1,7 @@
 """Report on Farm expenses."""
 
-from ext.farm import Farm
-from ext.output import info, alert
+from .ext.farm import Farm
+from .ext.output import info, alert
 
 
 def main():
