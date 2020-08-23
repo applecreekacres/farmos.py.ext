@@ -48,10 +48,11 @@
         },
         "farmos": {
             "hashes": [
-                "sha256:182cc0e86a4bacaf46fabc978ee91c12f10a9f8f72d25dcdeae0897b63af05e5"
+                "sha256:52aa3c2c29edd10ce06698a92fa4b3a8034a3fddc2e7b9f290f8764454e49007",
+                "sha256:88c3423889806de9ebef63048ed00f489391ced6a0a14613aef661b41cd04246"
             ],
             "index": "pypi",
-            "version": "==0.1.6"
+            "version": "==0.2.0"
         },
         "fuzzyfinder": {
             "hashes": [
