@@ -4,12 +4,13 @@ from datetime import date, datetime, timedelta
 
 import colorama
 
-from ext.output import alert, debug, info, message, init
-from ext.prompt import prompt, prompt_date, prompt_number, prompt_yes_no
-from ext.farm import Farm, Crop, CropFamily
+from .ext.output import alert, debug, info, message, init
+from .ext.prompt import prompt, prompt_date, prompt_number, prompt_yes_no
+from .ext.farm import Farm, Crop, CropFamily
 
 
 def main():
+    """Script entry."""
     init('planting.log')
     print("Creating a new planting...")
     farm = Farm()
@@ -54,25 +55,26 @@ def create_harvest(planting, transplant):
 
 def review_plan(crop, seeding, transplant, harvest):
     alert("Review the following information before it is published.")
-    message("{: <20}{: >20}".format("Planting:", crop),
+    msg_fmt = "{: <20}{: >20}"
+    message(msg_fmt.format("Planting:", crop),
             color=colorama.Fore.GREEN)
-    message("{: <20}{: >20}".format("Seeding Date:",
-                                    seeding['date'].strftime("%Y-%m-%d")))
-    message("{: <20}{: >20}".format("Seeding Location:", seeding['location']))
-    message("{: <20}{: >20}".format("Seeds Needed:", seeding['seeds']))
-    message("{: <20}{: >20}".format("Seed Lot:", seeding['lot']))
-    message("{: <20}{: >20}".format("Done:", str(seeding['done'])))
+    message(msg_fmt.format("Seeding Date:",
+                           seeding['date'].strftime("%Y-%m-%d")))
+    message(msg_fmt.format("Seeding Location:", seeding['location']))
+    message(msg_fmt.format("Seeds Needed:", seeding['seeds']))
+    message(msg_fmt.format("Seed Lot:", seeding['lot']))
+    message(msg_fmt.format("Done:", str(seeding['done'])))
     if transplant['date']:
         message("Transplant", color=colorama.Fore.GREEN)
-        message("{: <20}{: >20}".format(
+        message(msg_fmt.format(
             "Date:", transplant['date'].strftime("%Y-%m-%d")))
-        message("{: <20}{: >20}".format("Location:", transplant['location']))
-        message("{: <20}{: >20}".format("Done:", str(transplant['done'])))
+        message(msg_fmt.format("Location:", transplant['location']))
+        message(msg_fmt.format("Done:", str(transplant['done'])))
     if harvest['date']:
         message("Harvest", color=colorama.Fore.GREEN)
-        message("{: <20}{: >20}".format(
+        message(msg_fmt.format(
             "Date:", harvest['date'].strftime("%Y-%m-%d")))
-        message("{: <20}{: >20}".format("Done:", str(harvest['done'])))
+        message(msg_fmt.format("Done:", str(harvest['done'])))
 
 
 def schedule_harvest(transplant_date: datetime, crop: Crop, seed_date: datetime):
@@ -195,7 +197,8 @@ def get_crop_families(farm: Farm):
 
 def get_crops(farm: Farm, fam_ids, crop_family):
     crops = farm.crops
-    crop_names = [x.name[str(x.name).index('-')+2:] for x in crops if x.crop_family and x.crop_family.id == fam_ids[crop_family]]
+    crop_names = [x.name[str(x.name).index(
+        '-')+2:] for x in crops if x.crop_family and x.crop_family.id == fam_ids[crop_family]]
     return crop_names
 
 

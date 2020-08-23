@@ -21,5 +21,10 @@ jobs:
         python-version: 3.7
     - uses: dschep/install-pipenv-action@v1
     - run: pipenv install -d
-    - name: PyCodeStyle
-      run: pipenv run pycodestyle .
+    - name: Lints
+      uses: ricardochaves/python-lint@v1.1.0
+      with:
+        python-root-list: "farmer"
+        use-pylint: true
+        use-pycodestyle: true
+

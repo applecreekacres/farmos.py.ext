@@ -1,6 +1,6 @@
 
-from ext.farm import Farm, Crop
-from ext.output import alert, error, init
+from .ext.farm import Farm, Crop
+from .ext.output import alert, error, init
 
 
 def main():
