@@ -134,7 +134,7 @@ def prompt_date(message: str) -> datetime:
     """
     response = prompt("{} [DDMMYYYY]".format(
         message), validator=DateValidator())
-    form_date = datetime.strptime(response, "%m%d%Y").date()
+    form_date = datetime.strptime(response, "%d%m%Y").date()
     return form_date
 
 

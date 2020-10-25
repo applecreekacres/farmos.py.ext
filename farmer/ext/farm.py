@@ -38,9 +38,10 @@ class FarmObj(object):
 
     _farm = None
 
-    _ref_objs = {}
+
 
     def __init__(self, farm, keys: Dict = None):
+        self._ref_objs = {}
         self._farm = farm
         if keys:
             self._attr_keys(keys)
@@ -57,18 +58,19 @@ class FarmObj(object):
     def _attr_key(self, key, keys, exist=False, delete=True):
         if key in keys:
             if isinstance(keys[key], list):
-                li = []
-                for item in keys[key]:
-                    if isinstance(item, dict):
-                        if 'id' in item:
-                            refitem = self._farm.term.get(int(item['id']))
-                            obj = FarmObj(self._farm, keys=refitem)
-                        else:
-                            obj = FarmObj(self._farm, keys=item)
-                        li.append(obj)
-                    else:
-                        li.append(item)
-                setattr(self, key, li)
+                # li = []
+                # for item in keys[key]:
+                #     if isinstance(item, dict):
+                #         if 'id' in item:
+                #             refitem = self._farm.term.get(int(item['id']))
+                #             obj = FarmObj(self._farm, keys=refitem)
+                #         else:
+                #             obj = FarmObj(self._farm, keys=item)
+                #         li.append(obj)
+                #     else:
+                #         li.append(item)
+                # setattr(self, key, li)
+                setattr(self, key, keys[key])
             elif isinstance(keys[key], dict):
                 self._ref_objs[key] = keys[key]
             else:
@@ -161,8 +163,8 @@ class Farm(farmOS):
                 Exception("USER key is not defined in farmos.cfg")
             if not PASS:
                 Exception("PASS key is not defined in farmos.cfg")
-        super().__init__(HOST, USER, PASS)
-        self.authenticate()
+        super().__init__(HOST)
+        self._token = self.authorize(USER, PASS)
 
     def reset(self):
         self._areas = []
@@ -183,7 +185,7 @@ class Farm(farmOS):
         if not self._seasons:
             response = self.term.get("farm_season")
             for season in response['list']:
-                self._seasons.append(Season(season, self))
+                self._seasons.append(Season(self, season))
         return self._seasons
 
     @property

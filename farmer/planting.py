@@ -4,9 +4,9 @@ from datetime import date, datetime, timedelta
 
 import colorama
 
-from .ext.farm import Crop, CropFamily, Farm
-from .ext.output import alert, debug, info, init, message
-from .ext.prompt import prompt, prompt_date, prompt_number, prompt_yes_no
+from farmer.ext.farm import Crop, CropFamily, Farm
+from farmer.ext.output import alert, debug, info, init, message
+from farmer.ext.prompt import prompt, prompt_date, prompt_number, prompt_yes_no
 
 
 def main():
@@ -20,13 +20,15 @@ def main():
     crop_info = get_crop_info(crop, farm)
     transplant = schedule_transplant(crop_info, seeding['date'], farm)
     harvest = schedule_harvest(transplant['date'], crop_info, seeding['date'])
-    review_plan(crop, seeding, transplant, harvest)
-    planting = create_planting(farm, crop_info, season)
-    create_seeding(planting, seeding)
-    if transplant['date']:
-        create_transplant(planting, transplant)
-    if harvest['date']:
-        create_harvest(planting, harvest)
+    good = review_plan(crop, seeding, transplant, harvest)
+    if good:
+        location = transplant['location'] if transplant else seeding['location']
+        planting = create_planting(farm, crop_info, season, location)
+        create_seeding(planting, seeding)
+        if transplant['date']:
+            create_transplant(planting, transplant)
+        if harvest['date']:
+            create_harvest(planting, harvest)
 
 
 def determine_season(farm: Farm):
@@ -34,10 +36,17 @@ def determine_season(farm: Farm):
     return prompt("Season:", completion=seasons)
 
 
-def create_planting(farm: Farm, crop, season):
+def create_planting(farm: Farm, crop: Crop, season: str, location: str):
     return farm.asset.send({
-        "name": "",
-        "type": "planting"
+        "name": "{} {} {}".format(season, location, crop.name),
+        "type": "planting",
+        "crop": [
+            { "id": crop.tid}
+        ],
+        "season": season,
+        "location": {
+            "id": 
+        }
     })
 
 
@@ -75,6 +84,7 @@ def review_plan(crop, seeding, transplant, harvest):
         message(msg_fmt.format(
             "Date:", harvest['date'].strftime("%Y-%m-%d")))
         message(msg_fmt.format("Done:", str(harvest['done'])))
+    return prompt_yes_no("Publish Planting?")
 
 
 def schedule_harvest(transplant_date: datetime, crop: Crop, seed_date: datetime):
@@ -198,7 +208,7 @@ def get_crop_families(farm: Farm):
 def get_crops(farm: Farm, fam_ids, crop_family):
     crops = farm.crops
     crop_names = [x.name[str(x.name).index(
-        '-')+2:] for x in crops if x.crop_family and x.crop_family.id == fam_ids[crop_family]]
+        '-')+2:] for x in crops if 'crop_family' in x._ref_objs and x._ref_objs['crop_family']['id'] == fam_ids[crop_family]]
     return crop_names
 
 
