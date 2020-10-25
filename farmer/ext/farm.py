@@ -17,7 +17,7 @@ def farm():
 
 
 def _ref_key(obj, farm, keys: Dict, key: str, attr_class):
-    
+
     if keys[key]['id']:
         setattr(obj, key, attr_class(farm, id_field=keys[key]['id']))
     del keys[key]

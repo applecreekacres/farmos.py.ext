@@ -1,7 +1,8 @@
 """Wrapper around prompt toolkit."""
 
-from datetime import date, datetime, timedelta
 import logging
+from datetime import date, datetime, timedelta
+
 from prompt_toolkit import prompt as prmpt
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion import WordCompleter

@@ -1,5 +1,5 @@
 
-from .ext.farm import Farm, Crop
+from .ext.farm import Crop, Farm
 from .ext.output import alert, error, init
 
 

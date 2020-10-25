@@ -1,8 +1,8 @@
 """Create Purchase Logs."""
 
-from .ext.prompt import prompt_date, prompt_number, prompt
 from .ext.farm import Farm
-from .ext.output import message, alert
+from .ext.output import alert, message
+from .ext.prompt import prompt, prompt_date, prompt_number
 
 
 def main():
