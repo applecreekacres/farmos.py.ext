@@ -1,5 +1,6 @@
 """Main farm access."""
 
+from datetime import date, datetime
 import os
 from typing import Dict, List
 
@@ -37,8 +38,6 @@ def _ref_key_list(obj, farm, key, keys_list, attr_class, exist=False):
 class FarmObj(object):
 
     _farm = None
-
-
 
     def __init__(self, farm, keys: Dict = None):
         self._ref_objs = {}
@@ -96,7 +95,12 @@ class Log(FarmObj):
 
 
 class Asset(FarmObj):
-    pass
+
+    def __init__(self, farm, keys):
+        if 'id' not in keys and 'resource' not in keys:
+            super(Asset, self).__init__(farm, keys)
+        elif 'resource' in keys and keys['resource'] == 'farm_asset':
+            super(Asset, self).__init__(farm, farm.asset.get({'id': keys['id']})['list'][0])
 
 
 class Season(Term):
@@ -135,6 +139,25 @@ class Unit(FarmObj):
     pass
 
 
+class Log(FarmObj):
+
+    def __init__(self, farm, keys):
+        if 'id' not in keys and 'resource' not in keys:
+            super(Log, self).__init__(farm, keys)
+        elif 'resource' in keys and keys['resource'] == 'log':
+            super(Log, self).__init__(farm, farm.log.get({'id': keys['id']})['list'][0])
+        else:
+            raise KeyError('Key resource does not have value log')
+
+
+class Seeding(Log):
+    pass
+
+
+class Transplanting(Log):
+    pass
+
+
 class Farm(farmOS):
 
     _areas = []
@@ -146,6 +169,7 @@ class Farm(farmOS):
     _planting = []
     _expenses = []
     _units = []
+    _assets = []
 
     def __init__(self):
         if os.path.exists("farmos.cfg"):
@@ -174,6 +198,7 @@ class Farm(farmOS):
         self._content = None
         self._equipment = []
         self._planting = []
+        self._assets = []
 
     def content(self):
         if not self._content:
@@ -190,7 +215,11 @@ class Farm(farmOS):
 
     @property
     def assets(self):
-        pass
+        if not self._assets:
+            response = self.asset.get()
+            for asset in response['list']:
+                self._assets.append(Asset(self, keys=asset))
+        return self._assets
 
     @property
     def areas(self):
@@ -257,3 +286,91 @@ class Farm(farmOS):
         for unit in units['list']:
             self._units.append(Unit(self, unit))
         return self._units
+
+    def create_planting(self, crop: Crop, season: str, location: str):
+        ret = self.asset.send({
+            "name": "{} {} {}".format(season, location, crop.name),
+            "type": "planting",
+            "crop": [
+                {
+                    "id": crop.tid
+                }
+            ],
+            "season": [{"name": season}]
+        })
+        plant = Planting(self, keys=ret)
+        self._planting.append(plant)
+        return plant
+
+    def create_seeding(self, planting: Planting, location: Area, crop: Crop, date: datetime, seeds: int, source=None, done=False):
+        name = "Seed {} {}".format(location.name, crop.name)
+        fields = {
+            "type": "farm_seeding",
+            "asset": [
+                {
+                    "id": planting.id,
+                    "resource": "taxonomy_term"
+                }
+            ],
+            "seed_source": source,
+            "movement": {
+                "area": [
+                    {
+                        "id": location.tid,
+                        "resource": "taxonomy_term"
+                    }
+                ]
+            },
+            "quantity": [
+                {
+                    "measure": "count",
+                    "value": str(seeds),
+                    "unit": {
+                        'name': 'Seeds',
+                        "resource": "taxonomy_term"
+                    }
+                }
+            ]
+        }
+        ret = self._create_log(name, date, 'Plantings', fields)
+        return Seeding(self, keys=ret)
+
+    def create_transplant(self, planting: Planting, location: Area, date: datetime, done=False):
+        name = "Transplant {} to {}".format(planting.crop[0]['name'], location.name)
+        data = {
+            "type": "farm_transplanting",
+            "movement": {
+                "area": [
+                    {
+                        "id": location.tid,
+                        "resource": "taxonomy_term"
+                    }
+                ]
+            },
+            "asset": [
+                {
+                    "id": planting.id,
+                    "resource": "taxonomy_term"
+                }
+            ]
+        }
+        ret = self._create_log(name, date, 'Plantings', data, done=done)
+        return Transplanting(self, ret)
+
+    def _create_log(self, name: str, date: datetime, category: str, fields: Dict, done=False):
+        data = {
+            "name": name,
+            "timestamp": datetime.timestamp(date),
+            "log_category": [{
+                "name": category
+            }],
+            "type": "farm_observation"
+        }
+        data.update(fields)
+        if 'done' not in data:
+            data['done'] = 1 if done else 0
+        ret = self.log.send(data)
+        return ret
+
+    def create_log(self, name: str, date: datetime, category: str, fields: Dict, done=False):
+        return Log(self, self._create_log(name, date, category, fields))

@@ -24,11 +24,11 @@ def main():
     if good:
         location = transplant['location'] if transplant else seeding['location']
         planting = create_planting(farm, crop_info, season, location)
-        create_seeding(planting, seeding)
+        create_seeding(farm, planting, seeding, crop_info)
         if transplant['date']:
-            create_transplant(planting, transplant)
+            create_transplant(farm, planting, transplant)
         if harvest['date']:
-            create_harvest(planting, harvest)
+            create_harvest(farm, planting, harvest)
 
 
 def determine_season(farm: Farm):
@@ -37,29 +37,35 @@ def determine_season(farm: Farm):
 
 
 def create_planting(farm: Farm, crop: Crop, season: str, location: str):
-    return farm.asset.send({
-        "name": "{} {} {}".format(season, location, crop.name),
-        "type": "planting",
-        "crop": [
-            { "id": crop.tid}
-        ],
-        "season": season,
-        "location": {
-            "id": 
-        }
-    })
+    planting = farm.create_planting(crop, season, location)
+    message("Created Planting: {}".format(planting.name))
+    return planting
 
 
-def create_seeding(planting, seeding):
-    return None
+def create_seeding(farm: Farm, planting, seeding, crop: Crop):
+    area = [x for x in farm.areas if x.name == seeding['location']][0]
+    seed_log = farm.create_seeding(planting,
+                        area,
+                        crop,
+                        datetime.combine(seeding['date'], datetime.min.time()),
+                        seeding['seeds'],
+                        seeding['source'])
+    message("Created Seeding: {}".format(seed_log.name))
+    return seed_log
 
 
-def create_transplant(planting, transplant):
-    return None
+def create_transplant(farm, planting, transplant):
+    area = [x for x in farm.areas if x.name == transplant['location']][0]
+    trans_log = farm.create_transplant(planting,
+                                  area,
+                                  datetime.combine(transplant['date'],
+                                  datetime.min.time()),
+                                  done=transplant['done'])
+    message("Created Transplanting: {}".format(trans_log.name))
 
 
-def create_harvest(planting, transplant):
-    return None
+def create_harvest(farm, planting, harvest):
+    return farm.create_harvest(planting, harvest)
 
 
 def review_plan(crop, seeding, transplant, harvest):
@@ -74,7 +80,7 @@ def review_plan(crop, seeding, transplant, harvest):
     message(msg_fmt.format("Seed Lot:", seeding['lot']))
     message(msg_fmt.format("Done:", str(seeding['done'])))
     if transplant['date']:
-        message("Transplant", color=colorama.Fore.GREEN)
+        message("Transplant:", color=colorama.Fore.GREEN)
         message(msg_fmt.format(
             "Date:", transplant['date'].strftime("%Y-%m-%d")))
         message(msg_fmt.format("Location:", transplant['location']))
@@ -111,7 +117,7 @@ def schedule_harvest(transplant_date: datetime, crop: Crop, seed_date: datetime)
 
 
 def schedule_transplant(crop: Crop, seed_date: datetime, farm: Farm):
-    done = True
+    done = False
     transplant = prompt_yes_no("Create a transplant?")
     transplant_date = None
     location = None
@@ -157,12 +163,14 @@ def schedule_seeding(farm: Farm):
     else:
         num_seeds = prompt_number("Number of Seeds")
     seed_location = prompt("Seed Location", completion=get_locations(farm))
+    seed_source = prompt("Seed Source")
     seed_lot = prompt("Seed Lot Number")
     return {
         "date": seed_date,
         "location": seed_location,
         "lot": seed_lot,
         "seeds": num_seeds,
+        "source": seed_source,
         "done": done
     }
 
