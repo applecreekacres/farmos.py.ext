@@ -2,7 +2,7 @@
 
 from datetime import date, datetime
 import os
-from typing import Dict, List
+from typing import Dict, List, Type
 
 from farmOS import farmOS
 from farmOS.client import BaseAPI
@@ -20,6 +20,11 @@ def farm():
 def _basic_prop(prop):
     return prop if prop else None
 
+
+def _ts_to_dt(ts: str) -> datetime:
+        return datetime.fromtimestamp(ts) if ts else None
+
+
 class FarmObj(object):
 
     _farm = None
@@ -30,9 +35,6 @@ class FarmObj(object):
         if keys:
             for key in keys:
                 setattr(self, '_{}'.format(key), keys[key])
-
-    def _ts_to_dt(ts: str) -> datetime:
-        return datetime.fromtimestamp(ts) if ts else None
 
     def _get_terms(self, items: List[Dict], obj_class):
         li = []
@@ -81,8 +83,13 @@ class Content(FarmObj):
 
 class Term(FarmObj):
 
-    def __init__(self, farm, keys):
-        super(Term, self).__init__(farm, keys)
+    def __init__(self, farm: farmOS, keys: Dict):
+        if 'resource' not in keys:
+            super(Term, self).__init__(farm, keys)
+        elif 'resource' in keys and keys['resource'] == 'taxonomy_term':
+            super(Term, self).__init__(farm, farm.term.get({'id': keys['id']})['list'][0])
+        else:
+            raise KeyError('Key resource does not have value taxonomy_term')
 
     @property
     def tid(self) -> int:
@@ -127,7 +134,7 @@ class Asset(FarmObj):
 
     @property
     def archived(self) -> datetime:
-        return self._ts_to_dt(self._archived) if self._archived else None
+        return _ts_to_dt(self._archived) if self._archived else None
 
     @property
     def images(self):
@@ -143,11 +150,11 @@ class Asset(FarmObj):
 
     @property
     def created(self) -> datetime:
-        return self._ts_to_dt(self._created) if self._created else None
+        return _ts_to_dt(self._created) if self._created else None
 
     @property
     def changed(self) -> datetime:
-        return self._ts_to_dt(self._changed)
+        return _ts_to_dt(self._changed)
 
     @property
     def uid(self) -> int:
@@ -200,6 +207,7 @@ class Area(FarmObj):
     def vocabulary(self):
         return _basic_prop(self._vocabulary)
 
+
 class User(FarmObj):
     pass
 
@@ -217,6 +225,10 @@ class Equipment(Asset):
     @property
     def serial_number(self) -> str:
         return _basic_prop(self._serial_number)
+
+
+class Category(FarmObj):
+    pass
 
 
 class Log(FarmObj):
@@ -240,7 +252,7 @@ class Log(FarmObj):
 
     @property
     def timestamp(self) -> datetime:
-        return self._ts_to_dt(self._timestamp)
+        return _ts_to_dt(self._timestamp)
 
     @property
     def done(self) -> bool:
@@ -291,8 +303,8 @@ class Log(FarmObj):
         return _basic_prop(self._flags)
 
     @property
-    def category(self) -> List[str]:
-        return _basic_prop(self._log_category)
+    def categories(self) -> List[Category]:
+        return [Category(self._farm, x) for x in self._log_category] if self._log_category else None
 
     @property
     def owner(self):
@@ -300,11 +312,11 @@ class Log(FarmObj):
 
     @property
     def created(self) -> datetime:
-        return self._ts_to_dt(self._created)
+        return _ts_to_dt(self._created)
 
     @property
     def changed(self) -> datetime:
-        return self._ts_to_dt(self._changed)
+        return _ts_to_dt(self._changed)
 
     @property
     def uid(self) -> int:
@@ -381,7 +393,7 @@ class Input(Log):
 
     @property
     def date_purchase(self) -> datetime:
-        return self._ts_to_dt(self._date_purchase)
+        return _ts_to_dt(self._date_purchase)
 
     @property
     def lot_number(self) -> str:
@@ -435,7 +447,7 @@ class Animal(Asset):
 
     @property
     def birth_date(self) -> datetime:
-        return self._ts_to_dt(self._date)
+        return _ts_to_dt(self._date)
 
 
 class Farm(farmOS):
@@ -451,6 +463,7 @@ class Farm(farmOS):
     _units = []
     _assets = []
     _harvests = []
+    _seedings = []
 
     def __init__(self):
         if os.path.exists("farmos.cfg"):
@@ -569,11 +582,24 @@ class Farm(farmOS):
 
     @property
     def harvests(self) -> List[Harvest]:
-        logs = self.log.get({'type': 'farm_harvest'})
-        for log in logs['list']:
-            obj = Harvest(self, log)
-            self._harvests.append(obj)
+        if not self._harvests:
+            self._harvests = self._get_logs('farm_harvest', Harvest)
         return self._harvests
+
+    @property
+    def seedings(self) -> List[Seeding]:
+        if not self._seedings:
+            self._seedings = self._get_logs('farm_seeding', Seeding)
+        return self._seedings
+
+
+    def _get_logs(self, typ: str, obj_class:  Type[Log]):
+        li = []
+        logs = self.log.get({'type': typ})
+        for log in logs['list']:
+            obj = obj_class(self, log)
+            li.append(obj)
+        return li
 
     def _create_log(self, name: str, date: datetime, category: str, fields: Dict, done=False):
         data = {
