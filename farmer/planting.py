@@ -58,14 +58,16 @@ def create_transplant(farm, planting, transplant):
     area = [x for x in farm.areas if x.name == transplant['location']][0]
     trans_log = farm.create_transplant(planting,
                                   area,
-                                  datetime.combine(transplant['date'],
-                                  datetime.min.time()),
+                                  datetime.combine(transplant['date'], datetime.min.time()),
                                   done=transplant['done'])
     message("Created Transplanting: {}".format(trans_log.name))
 
 
 def create_harvest(farm, planting, harvest):
-    return farm.create_harvest(planting, harvest)
+    harvest_log = farm.create_harvest(planting,
+                               datetime.combine(harvest['date'], datetime.min.time()),
+                               harvest['done'])
+    message("Created Harvest: {}".format(harvest_log.name))
 
 
 def review_plan(crop, seeding, transplant, harvest):

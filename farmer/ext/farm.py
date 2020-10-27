@@ -158,6 +158,10 @@ class Transplanting(Log):
     pass
 
 
+class Harvest(Log):
+    pass
+
+
 class Farm(farmOS):
 
     _areas = []
@@ -356,6 +360,18 @@ class Farm(farmOS):
         }
         ret = self._create_log(name, date, 'Plantings', data, done=done)
         return Transplanting(self, ret)
+
+    def create_harvest(self, planting: Planting, date: datetime, done=False):
+        name = "Harvest {}".format(planting.crop[0]['name'])
+        data = {
+            "type": "farm_harvest",
+            "asset": [{
+                "id": planting.id,
+                "resource": "taxonomy_term"
+            }]
+        }
+        ret = self._create_log(name, date, 'Plantings', data, done=done)
+        return Harvest(self, ret)
 
     def _create_log(self, name: str, date: datetime, category: str, fields: Dict, done=False):
         data = {
