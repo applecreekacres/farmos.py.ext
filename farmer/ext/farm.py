@@ -17,90 +17,302 @@ def farm():
     return Farm()
 
 
-def _ref_key(obj, farm, keys: Dict, key: str, attr_class):
-
-    if keys[key]['id']:
-        setattr(obj, key, attr_class(farm, id_field=keys[key]['id']))
-    del keys[key]
-
-
-def _ref_key_list(obj, farm, key, keys_list, attr_class, exist=False):
-    if keys_list[key]:
-        if isinstance(keys_list[key], list):
-            li = []
-            for item in keys_list[key]:
-                it = farm.get(int(item['id']))
-                li.append(attr_class(it))
-            setattr(obj, key, li)
-        del keys_list[key]
-
+def _basic_prop(prop):
+    return prop if prop else None
 
 class FarmObj(object):
 
     _farm = None
 
-    def __init__(self, farm, keys: Dict = None):
+    def __init__(self, farm: farmOS, keys: Dict = None):
         self._ref_objs = {}
         self._farm = farm
         if keys:
-            self._attr_keys(keys)
+            for key in keys:
+                setattr(self, '_{}'.format(key), keys[key])
 
-    def __getattr__(self, name):
-        if name in self._ref_objs:
-            item = self._farm.term.get(int(self._ref_objs[name]['id']))
-            setattr(self, name, FarmObj(self._farm, keys=item))
+    def _ts_to_dt(ts: str) -> datetime:
+        return datetime.fromtimestamp(ts) if ts else None
 
-    def _attr_keys(self, keys):
-        for key in keys:
-            self._attr_key(key, keys, None, delete=False)
+    def _get_terms(self, items: List[Dict], obj_class):
+        li = []
+        for item in items:
+            rets = self._farm.term.get(item['tid'])
+            for ret in rets['list']:
+                li.append(obj_class(self._farm, ret))
+        return li
 
-    def _attr_key(self, key, keys, exist=False, delete=True):
-        if key in keys:
-            if isinstance(keys[key], list):
-                # li = []
-                # for item in keys[key]:
-                #     if isinstance(item, dict):
-                #         if 'id' in item:
-                #             refitem = self._farm.term.get(int(item['id']))
-                #             obj = FarmObj(self._farm, keys=refitem)
-                #         else:
-                #             obj = FarmObj(self._farm, keys=item)
-                #         li.append(obj)
-                #     else:
-                #         li.append(item)
-                # setattr(self, key, li)
-                setattr(self, key, keys[key])
-            elif isinstance(keys[key], dict):
-                self._ref_objs[key] = keys[key]
-            else:
-                setattr(self, key, keys[key])
-            if delete:
-                del keys[key]
-        elif exist:
-            setattr(self, key, None)
+    def _get_logs(self, items: List[Dict], obj_class):
+        li = []
+        for item in items:
+            rets = self._farm.log.get(item['id'])
+            for ret in rets['list']:
+                li.append(obj_class(self._farm, ret))
+        return li
 
-    def _get_obj(self, item):
-        ref = None
-        if item['resource'] == 'taxonomy_term':
-            ref = self._farm.term.get(int(item['id']))
-        # elif item['resource'] ==
+    def _get_areas(self, items: List[Dict], obj_class):
+        li = []
+        for item in items:
+            rets = self._farm.area.get(item['id'])
+            for ret in rets['list']:
+                li.append(obj_class(self._farm, ret))
+        return li
+
+    def _get_assets(self, items: List[Dict], obj_class):
+        li = []
+        for item in items:
+            rets = self._farm.asset.get(item['id'])
+            for ret in rets['list']:
+                li.append(obj_class(self._farm, ret))
+        return li
+
+    @property
+    def name(self) -> str:
+        return _basic_prop(self._name)
+
+    @property
+    def url(self) -> str:
+        return _basic_prop(self._url)
+
+
+class Content(FarmObj):
+    pass
 
 
 class Term(FarmObj):
-    pass
 
+    def __init__(self, farm, keys):
+        super(Term, self).__init__(farm, keys)
 
-class Log(FarmObj):
-    pass
+    @property
+    def tid(self) -> int:
+        return int(self._tid) if self._tid else None
+
+    @property
+    def weight(self) -> int:
+        return int(self._weight) if self._weight else None
+
+    @property
+    def description(self) -> str:
+        return _basic_prop(self._description)
+
+    @property
+    def parent(self):
+        return self._get_terms(self._parent, Term) if self._parent else None
+
+    @property
+    def vocabulary(self):
+        return _basic_prop(self._vocabulary)
 
 
 class Asset(FarmObj):
 
     def __init__(self, farm, keys):
-        if 'id' not in keys and 'resource' not in keys:
+        if 'resource' not in keys:
             super(Asset, self).__init__(farm, keys)
         elif 'resource' in keys and keys['resource'] == 'farm_asset':
             super(Asset, self).__init__(farm, farm.asset.get({'id': keys['id']})['list'][0])
+
+    @property
+    def id(self) -> str:
+        return _basic_prop(self._id)
+
+    @property
+    def type(self) -> str:
+        return _basic_prop(self._type)
+
+    @property
+    def description(self) -> str:
+        return _basic_prop(self._description)
+
+    @property
+    def archived(self) -> datetime:
+        return self._ts_to_dt(self._archived) if self._archived else None
+
+    @property
+    def images(self):
+        return _basic_prop(self._images)
+
+    @property
+    def files(self):
+        return _basic_prop(self._files)
+
+    @property
+    def flags(self) -> List[str]:
+        return _basic_prop(self._flags)
+
+    @property
+    def created(self) -> datetime:
+        return self._ts_to_dt(self._created) if self._created else None
+
+    @property
+    def changed(self) -> datetime:
+        return self._ts_to_dt(self._changed)
+
+    @property
+    def uid(self) -> int:
+        return int(self._uid) if self._uid else None
+
+    @property
+    def data(self) -> str:
+        return _basic_prop(self._data)
+
+
+class Area(FarmObj):
+
+    @property
+    def assets(self) -> List[Asset]:
+        return self._get_assets(self._assets, Asset) if self._assets else None
+
+    @property
+    def description(self) ->  str:
+        return _basic_prop(self._description)
+
+    @property
+    def files(self):
+        return _basic_prop(self._files)
+
+    @property
+    def flags(self) -> List[str]:
+        return _basic_prop(self._flags)
+
+    @property
+    def geofield(self) -> List[Dict]:
+        return _basic_prop(self._geofield)
+
+    @property
+    def images(self):
+        return _basic_prop(self._images)
+
+    @property
+    def parent(self) -> List:
+        return self._get_areas(self._parent, Area) if self._parent else None
+
+    @property
+    def parents_all(self) ->  List:
+        return self._get_areas(self._parents_all, Area) if self._parents_all else None
+
+    @property
+    def tid(self) -> int:
+        return int(self._tid) if self._tid else None
+
+    @property
+    def vocabulary(self):
+        return _basic_prop(self._vocabulary)
+
+class User(FarmObj):
+    pass
+
+
+class Equipment(Asset):
+
+    @property
+    def manufacturer(self) -> str:
+        return _basic_prop(self._manufacturer)
+
+    @property
+    def model(self) -> str:
+        return _basic_prop(self._model)
+
+    @property
+    def serial_number(self) -> str:
+        return _basic_prop(self._serial_number)
+
+
+class Log(FarmObj):
+
+    def __init__(self, farm: farmOS, keys: Dict):
+        if 'resource' not in keys:
+            super(Log, self).__init__(farm, keys)
+        elif 'resource' in keys and keys['resource'] == 'log':
+            super(Log, self).__init__(farm, farm.log.get({'id': keys['id']})['list'][0])
+        else:
+            raise KeyError('Key resource does not have value log')
+
+
+    @property
+    def id(self)-> int:
+        return int(self._id) if self._id else None
+
+    @property
+    def type(self):
+        return _basic_prop(self._type)
+
+    @property
+    def timestamp(self) -> datetime:
+        return self._ts_to_dt(self._timestamp)
+
+    @property
+    def done(self) -> bool:
+        return bool(self._done) if self._done else None
+
+    @property
+    def notes(self) -> str:
+        return self._notes['value'] if self._notes else None
+
+    @property
+    def asset(self) -> Asset:
+        return self._get_assets(self._asset, Asset) if self._asset else None
+
+    @property
+    def equipment(self) -> Equipment:
+        return self._get_assets(self._equipment, Equipment) if self._equipment else None
+
+    @property
+    def area(self) -> List[Area]:
+        return self._get_areas(self._area, Area) if self._area else None
+
+    @property
+    def geofield(self) -> str:
+        return _basic_prop(self._geofield)
+
+    @property
+    def movement(self):
+        return _basic_prop(self._movement)
+
+    @property
+    def membership(self):
+        return _basic_prop(self._membership)
+
+    @property
+    def quantity(self):
+        return _basic_prop(self._quantity)
+
+    @property
+    def images(self):
+        return _basic_prop(self._images)
+
+    @property
+    def files(self):
+        return _basic_prop(self._files)
+
+    @property
+    def flags(self) -> str:
+        return _basic_prop(self._flags)
+
+    @property
+    def category(self) -> List[str]:
+        return _basic_prop(self._log_category)
+
+    @property
+    def owner(self):
+        return _basic_prop(self._log_owner)
+
+    @property
+    def created(self) -> datetime:
+        return self._ts_to_dt(self._created)
+
+    @property
+    def changed(self) -> datetime:
+        return self._ts_to_dt(self._changed)
+
+    @property
+    def uid(self) -> int:
+        return int(self._uid) if self._uid else None
+
+    @property
+    def data(self) -> str:
+        return _basic_prop(self._data)
 
 
 class Season(Term):
@@ -111,43 +323,69 @@ class CropFamily(Term):
     pass
 
 
-class Area(Asset):
-    pass
-
-
 class Crop(Term):
-    pass
 
+    @property
+    def companions(self):
+        return self._get_terms(self._companions, Crop) if self._companions else None
 
-class Content(FarmObj):
-    pass
+    @property
+    def crop_family(self) -> CropFamily:
+        return CropFamily(self._farm, self._crop_family) if self._crop_family else None
 
+    @property
+    def images(self) -> List:
+        return _basic_prop(self._images)
 
-class Equipment(Asset):
-    pass
+    @property
+    def maturity_days(self) -> int:
+        return int(self._maturity_days) if self._maturity_days else None
+
+    @property
+    def parents_all(self) -> List:
+        return self._get_terms(self._parents_all, Crop) if self._parents_all else None
+
+    @property
+    def transplant_days(self) -> int:
+        return int(self._transplant_days) if self._transplant_days else None
 
 
 class Planting(Asset):
-    pass
 
-
-class User(FarmObj):
-    pass
+    @property
+    def crop(self) ->  List[Crop]:
+        return self._get_terms(self._crop, Crop) if self._crop else None
 
 
 class Unit(FarmObj):
     pass
 
 
-class Log(FarmObj):
+class Input(Log):
 
-    def __init__(self, farm, keys):
-        if 'id' not in keys and 'resource' not in keys:
-            super(Log, self).__init__(farm, keys)
-        elif 'resource' in keys and keys['resource'] == 'log':
-            super(Log, self).__init__(farm, farm.log.get({'id': keys['id']})['list'][0])
-        else:
-            raise KeyError('Key resource does not have value log')
+    @property
+    def material(self):
+        return _basic_prop(self._material)
+
+    @property
+    def purpose(self) -> str:
+        return _basic_prop(self._input_purpose)
+
+    @property
+    def method(self) -> str:
+        return _basic_prop(self._input_method)
+
+    @property
+    def source(self) -> str:
+        return _basic_prop(self._input_source)
+
+    @property
+    def date_purchase(self) -> datetime:
+        return self._ts_to_dt(self._date_purchase)
+
+    @property
+    def lot_number(self) -> str:
+        return _basic_prop(self._lot_number)
 
 
 class Seeding(Log):
@@ -159,7 +397,45 @@ class Transplanting(Log):
 
 
 class Harvest(Log):
+
+    @property
+    def lot_number(self) -> str:
+        return _basic_prop(self._lot_number)
+
+
+class Expense(Log):
     pass
+
+
+class Animal(Asset):
+
+    @property
+    def animal_type(self) -> str:
+        return _basic_prop(self._animal_type)
+
+    @property
+    def nicknames(self) -> List[str]:
+        return _basic_prop(self._animal_nicknames)
+
+    @property
+    def castrated(self) -> bool:
+        return _basic_prop(self._animal_castrated)
+
+    @property
+    def sex(self) -> str:
+        return _basic_prop(self._animal_sex)
+
+    @property
+    def tag(self):
+        return _basic_prop(self._tag)
+
+    @property
+    def parent(self) -> List:
+        return self._get_assets(self._parent, Animal) if self._parent else None
+
+    @property
+    def birth_date(self) -> datetime:
+        return self._ts_to_dt(self._date)
 
 
 class Farm(farmOS):
@@ -174,6 +450,7 @@ class Farm(farmOS):
     _expenses = []
     _units = []
     _assets = []
+    _harvests = []
 
     def __init__(self):
         if os.path.exists("farmos.cfg"):
@@ -203,8 +480,10 @@ class Farm(farmOS):
         self._equipment = []
         self._planting = []
         self._assets = []
+        self._harvests = []
 
-    def content(self):
+    @property
+    def content(self) -> Content:
         if not self._content:
             self._content = Content(self, keys=self.info())
         return self._content
@@ -218,7 +497,7 @@ class Farm(farmOS):
         return self._seasons
 
     @property
-    def assets(self):
+    def assets(self) ->  List[Asset]:
         if not self._assets:
             response = self.asset.get()
             for asset in response['list']:
@@ -226,7 +505,7 @@ class Farm(farmOS):
         return self._assets
 
     @property
-    def areas(self):
+    def areas(self) -> List[Area]:
         if not self._areas:
             response = self.area.get()
             for area in response['list']:
@@ -234,7 +513,7 @@ class Farm(farmOS):
         return self._areas
 
     @property
-    def crop_families(self):
+    def crop_families(self) -> List[CropFamily]:
         if not self._crop_families:
             response = self.term.get("farm_crop_families")
             for fam in response['list']:
@@ -251,7 +530,7 @@ class Farm(farmOS):
         return self._crops
 
     @property
-    def equipment(self):
+    def equipment(self) ->  List[Equipment]:
         if not self._equipment:
             response = self.asset.get({
                 'type': 'equipment'
@@ -261,7 +540,7 @@ class Farm(farmOS):
         return self._equipment
 
     @property
-    def planting(self):
+    def plantings(self) -> List[Planting]:
         if not self._planting:
             response = self.asset.get({
                 'type': 'planting'
@@ -270,26 +549,46 @@ class Farm(farmOS):
                 self._planting.append(Planting(self, planting))
         return self._planting
 
-    def create(self, type_name, fields):
-        pass
-
     @property
-    def expense_logs(self):
+    def expenses(self) ->  List[Expense]:
         logs = self.log.get({
             'type': 'farm_activity'
         })
         for log in logs['list']:
-            obj = Log(self, log)
+            obj = Expense(self, log)
             if True:
                 self._expenses.append(obj)
         return self._expenses
 
     @property
-    def units(self):
+    def units(self) -> List[Unit]:
         units = self.term.get('farm_quantity_units')
         for unit in units['list']:
             self._units.append(Unit(self, unit))
         return self._units
+
+    @property
+    def harvests(self) -> List[Harvest]:
+        logs = self.log.get({'type': 'farm_harvest'})
+        for log in logs['list']:
+            obj = Harvest(self, log)
+            self._harvests.append(obj)
+        return self._harvests
+
+    def _create_log(self, name: str, date: datetime, category: str, fields: Dict, done=False):
+        data = {
+            "name": name,
+            "timestamp": datetime.timestamp(date),
+            "log_category": [{
+                "name": category
+            }],
+            "type": "farm_observation"
+        }
+        data.update(fields)
+        if 'done' not in data:
+            data['done'] = 1 if done else 0
+        ret = self.log.send(data)
+        return ret
 
     def create_planting(self, crop: Crop, season: str, location: str):
         ret = self.asset.send({
@@ -372,21 +671,6 @@ class Farm(farmOS):
         }
         ret = self._create_log(name, date, 'Plantings', data, done=done)
         return Harvest(self, ret)
-
-    def _create_log(self, name: str, date: datetime, category: str, fields: Dict, done=False):
-        data = {
-            "name": name,
-            "timestamp": datetime.timestamp(date),
-            "log_category": [{
-                "name": category
-            }],
-            "type": "farm_observation"
-        }
-        data.update(fields)
-        if 'done' not in data:
-            data['done'] = 1 if done else 0
-        ret = self.log.send(data)
-        return ret
 
     def create_log(self, name: str, date: datetime, category: str, fields: Dict, done=False):
         return Log(self, self._create_log(name, date, category, fields))
