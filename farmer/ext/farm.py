@@ -87,7 +87,7 @@ class Term(FarmObj):
         if 'resource' not in keys:
             super(Term, self).__init__(farm, keys)
         elif 'resource' in keys and keys['resource'] == 'taxonomy_term':
-            super(Term, self).__init__(farm, farm.term.get({'id': keys['id']})['list'][0])
+            super(Term, self).__init__(farm, farm.term.get(keys['id']))
         else:
             raise KeyError('Key resource does not have value taxonomy_term')
 
@@ -343,7 +343,7 @@ class Crop(Term):
 
     @property
     def crop_family(self) -> CropFamily:
-        return CropFamily(self._farm, self._crop_family) if self._crop_family else None
+        return CropFamily(self._farm, self._crop_family) if hasattr(self, '_crop_family') else None
 
     @property
     def images(self) -> List:
