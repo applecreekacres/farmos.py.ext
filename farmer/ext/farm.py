@@ -2,7 +2,7 @@
 from __future__ import annotations
 from datetime import date, datetime
 import os
-from typing import Dict, List, Type
+from typing import Dict, List, Type, Union
 
 from farmOS import farmOS
 from farmOS.client import BaseAPI
@@ -35,7 +35,6 @@ class FarmObj(object):
     _farm = None
 
     def __init__(self, farm: farmOS, keys: Dict = None):
-        self._ref_objs = {}
         self._farm = farm
         if keys:
             for key in keys:
@@ -86,7 +85,30 @@ class FarmObj(object):
 
 
 class Content(FarmObj):
-    pass
+
+    @property
+    def api_version(self) -> Union[str, None]:
+        return _basic_prop(self._api_version)
+
+    @property
+    def system_of_measurement(self) -> Union[str, None]:
+        return _basic_prop(self._system_of_measurement)
+
+    @property
+    def metrics(self) -> Dict:
+        return _basic_prop(self._metrics)
+
+    @property
+    def mapbox_api_key(self) -> str:
+        return _basic_prop(self._mapbox_api_key)
+
+    @property
+    def languages(self) -> Dict:
+        return _basic_prop(self._languages)
+
+    @property
+    def google_maps_api_key(self) -> str:
+        return _basic_prop(self._google_maps_api_key)
 
 
 class Term(FarmObj):
@@ -117,7 +139,7 @@ class Term(FarmObj):
 
     @property
     def vocabulary(self) -> Dict:
-        return _basic_prop(self._vocabulary)
+        return FarmObj(self, self._vocabulary) if self._vocabulary else None
 
 
 class Asset(FarmObj):
