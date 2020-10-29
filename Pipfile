@@ -9,6 +9,7 @@ pydocstyle = "*"
 rope = "*"
 autopep8 = "*"
 pylint = "*"
+pytest = "*"
 
 [packages]
 farmos = "*"
