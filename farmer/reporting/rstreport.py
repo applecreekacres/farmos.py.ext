@@ -34,7 +34,8 @@ class RstReporter(Report):
         self._doc += self._sanitize(text)
 
     def line(self, text=""):
-        self._append("{}\n".format(text))
+        if text is not None:
+            self._append("{}\n".format(text))
 
     def directive(self, name: Union[str, Dict[str, str]], configs: List[Union[str, Dict[str, str]]]):
         self.line()
@@ -82,7 +83,35 @@ class RstReporter(Report):
         self.line("    PageBreak")
         self.line()
 
+    def table(self, items: List[Dict]):
+        def row(cols: List[str], widths: List[int]):
+            new_list = []
+            for index, col in enumerate(cols):
+                new_list.append("{col:{width}}".format(col=col, width=widths[index]))
+            return "| {} |".format(" | ".join(new_list))
+
+        def sep(widths: List[int]):
+            self.line("+{}+".format("+".join(["-"*(index+2) for index in widths])))
+
+        keys = items[0].keys()
+        col_widths = [0] * len(keys)
+        for index, key in enumerate(keys):
+            if len(key) > col_widths[index]:
+                col_widths[index] = len(key)
+            for item in items:
+                if len(item[key]) > col_widths[index]:
+                    col_widths[index] = len(item[key])
+        header = row(keys, col_widths)
+        sep(col_widths)
+        self.line(header)
+        sep(col_widths)
+
+        for item in items:
+            self.line(row([item[key] for key in keys], col_widths))
+            sep(col_widths)
+
+
     def save(self, pdf=False):
         path = "{}.rst".format(self.filename) if not self.filename.endswith(".rst") else self.filename
-        with open(path, 'w') as rst:
+        with open(path, 'w', encoding='utf-8') as rst:
             rst.write(self._doc)
