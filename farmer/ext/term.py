@@ -1,8 +1,8 @@
+from __future__ import annotations
 
 from typing import Dict, List
 
 from farmer.ext.farmobj import FarmObj
-from farmer.ext.term import Crop, Term
 from farmOS import farmOS
 
 
