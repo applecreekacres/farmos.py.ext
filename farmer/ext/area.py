@@ -16,23 +16,23 @@ class Area(FarmObj):
 
     @property
     def description(self) ->  str:
-        return _basic_prop(self._description)
+        return self._basic_prop(self._description)
 
     @property
     def files(self) -> List:
-        return _basic_prop(self._files)
+        return self._basic_prop(self._files)
 
     @property
     def flags(self) -> List[str]:
-        return _basic_prop(self._flags)
+        return self._basic_prop(self._flags)
 
     @property
     def geofield(self) -> List[Dict]:
-        return _basic_prop(self._geofield)
+        return self._basic_prop(self._geofield)
 
     @property
     def images(self) -> List:
-        return _basic_prop(self._images)
+        return self._basic_prop(self._images)
 
     @property
     def parent(self) -> List[Area]:
@@ -48,4 +48,4 @@ class Area(FarmObj):
 
     @property
     def vocabulary(self) -> Dict:
-        return _basic_prop(self._vocabulary)
+        return self._basic_prop(self._vocabulary)
