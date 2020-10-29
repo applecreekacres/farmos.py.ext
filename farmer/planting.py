@@ -66,6 +66,7 @@ def create_transplant(farm, planting, transplant):
 def create_harvest(farm, planting, harvest):
     harvest_log = farm.create_harvest(planting,
                                datetime.combine(harvest['date'], datetime.min.time()),
+                               None,
                                harvest['done'])
     message("Created Harvest: {}".format(harvest_log.name))
 
