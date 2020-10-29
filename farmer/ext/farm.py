@@ -1,12 +1,17 @@
 """Main farm access."""
 
 from __future__ import annotations
+from farmer.ext.log import Expense, Harvest, Log, Observation, Seeding, Transplanting
+from farmer.ext.term import CropFamily, Season, Unit, Crop
+from farmer.ext.others import Content, Quantity
 
 import os
 from datetime import datetime
 from typing import Dict, List, Type
 
 from farmOS import farmOS
+from farmer.ext.area import Area
+from farmer.ext.asset import Asset, Equipment, Planting
 
 HOST = None
 USER = None
