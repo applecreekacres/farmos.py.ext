@@ -1,6 +1,6 @@
 
 from datetime import datetime
-from typing import List
+from typing import Dict, List
 
 from farmer.ext.farmobj import FarmObj
 from farmer.ext.term import Crop
@@ -23,7 +23,7 @@ class Asset(FarmObj):
         return self._basic_prop(self._type)
 
     @property
-    def description(self) -> str:
+    def description(self) -> Dict:
         return self._basic_prop(self._description)
 
     @property

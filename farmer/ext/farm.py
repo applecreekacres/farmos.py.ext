@@ -78,10 +78,9 @@ class Farm(farmOS):
         for equip in self.asset.get({ 'type': 'equipment' })['list']:
             yield Equipment(self, equip)
 
-    @property
-    def plantings(self) -> Iterable[Planting]:
-        for planting in self.asset.get({ 'type': 'planting' })['list']:
-            yield Planting(self, planting)
+    def plantings(self, filters=dict()) -> Iterable[Planting]:
+        filters.update({ 'type': 'planting' })
+        return self._get_assets(Planting, filters)
 
     @property
     def expenses(self) ->  Iterable[Expense]:
@@ -97,21 +96,25 @@ class Farm(farmOS):
     def harvests(self) -> Iterable[Harvest]:
         return self._get_logs('farm_harvest', Harvest)
 
-    @property
-    def seedings(self) -> Iterable[Seeding]:
-        return self._get_logs('farm_seeding', Seeding)
+    def seedings(self, filters=dict()) -> Iterable[Seeding]:
+        filters.update({'type': 'farm_seeding'})
+        return self._get_logs(Seeding, filters)
 
-    @property
-    def transplants(self) -> Iterable[Transplanting]:
-        return self._get_logs('farm_transplanting', Transplanting)
+    def transplants(self, filters=dict()) -> Iterable[Transplanting]:
+        filters.update({'type': 'farm_transplanting'})
+        return self._get_logs(Transplanting, filters)
 
     @property
     def observations(self) -> Iterable[Observation]:
         return self._get_logs('farm_observation', Observation)
 
+    def _get_assets(self, obj_class: Type[Asset], filters={}) -> Iterable[Type[Asset]]:
+        for asset in self.asset.get(filters)['list']:
+            yield obj_class(self, asset)
 
-    def _get_logs(self, typ: str, obj_class:  Type[Log]) -> Iterable[Type[Log]]:
-        for log in self.log.get({'type': typ})['list']:
+
+    def _get_logs(self, obj_class: Type[Log], filters=dict()) -> Iterable[Type[Log]]:
+        for log in self.log.get(filters)['list']:
             yield obj_class(self, log)
 
     def _create_log(self, name: str, date: datetime, category: str, fields: Dict, done=False):

@@ -18,7 +18,7 @@ class FarmObj(object):
     def _get_terms(self, items: List[Dict], obj_class):
         li = []
         for item in items:
-            rets = self._farm.term.get(item['tid'])
+            rets = self._farm.term.get({"tid": item['id']})
             for ret in rets['list']:
                 li.append(obj_class(self._farm, ret))
         return li

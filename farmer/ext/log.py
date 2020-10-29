@@ -1,5 +1,6 @@
 
 from datetime import datetime
+from farmer.ext.others import Quantity
 from typing import Dict, List
 
 from farmer.ext.area import Area
@@ -57,16 +58,24 @@ class Log(FarmObj):
         return self._basic_prop(self._geofield)
 
     @property
-    def movement(self):
-        return self._basic_prop(self._movement)
+    def movement(self) -> List[Area]:
+        return self._get_areas(self._movement['area'], Area) if self._movement else None
 
     @property
     def membership(self):
         return self._basic_prop(self._membership)
 
     @property
-    def quantity(self):
-        return self._basic_prop(self._quantity)
+    def quantity(self) -> List[Quantity]:
+        if self._quantity:
+            ret = []
+            for quantity in self._quantity:
+                ret.append(Quantity(measure=quantity['measure'],
+                                    label=quantity['label'],
+                                    value=quantity['value'],
+                                    unit=quantity['unit'] if 'unit' in quantity else None))
+            return ret
+        return None
 
     @property
     def images(self) -> List:
