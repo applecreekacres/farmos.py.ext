@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Dict, List
 
 from farmer.ext.asset import Asset
-from farmer.ext.farmobj import FarmObj, _basic_prop
+from farmer.ext.farmobj import FarmObj
 
 
 class Area(FarmObj):

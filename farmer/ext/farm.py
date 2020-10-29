@@ -7,7 +7,7 @@ from farmer.ext.others import Content, Quantity
 
 import os
 from datetime import datetime
-from typing import Dict, List, Type
+from typing import Dict, Generator, Iterable, List, Type
 
 from farmOS import farmOS
 from farmer.ext.area import Area
@@ -20,21 +20,6 @@ def farm():
 
 
 class Farm(farmOS):
-
-    _areas = []
-    _crop_families = []
-    _seasons = []
-    _crops = []
-    _content = None
-    _equipment = []
-    _planting = []
-    _expenses = []
-    _units = []
-    _assets = []
-    _harvests = []
-    _seedings = []
-    _transplants = []
-    _observations = []
 
     def __init__(self):
         self._host = None
@@ -59,134 +44,75 @@ class Farm(farmOS):
         super().__init__(self._host)
         self._token = self.authorize(self._user, self._pass)
 
-    def reset(self):
-        self._areas = []
-        self._crop_families = []
-        self._seasons = []
-        self._crops = []
-        self._content = None
-        self._equipment = []
-        self._planting = []
-        self._assets = []
-        self._harvests = []
-
     @property
     def content(self) -> Content:
-        if not self._content:
-            self._content = Content(self, keys=self.info())
-        return self._content
+        return Content(self, keys=self.info())
 
     @property
-    def seasons(self) -> List[Season]:
-        if not self._seasons:
-            response = self.term.get("farm_season")
-            for season in response['list']:
-                self._seasons.append(Season(self, season))
-        return self._seasons
+    def seasons(self) -> Iterable[Season]:
+        for season in self.term.get("farm_season")['list']:
+            yield Season(self, season)
 
     @property
-    def assets(self) ->  List[Asset]:
-        if not self._assets:
-            response = self.asset.get()
-            for asset in response['list']:
-                self._assets.append(Asset(self, keys=asset))
-        return self._assets
+    def assets(self) ->  Iterable[Asset]:
+        for asset in self.asset.get()['list']:
+            yield Asset(self, keys=asset)
 
     @property
-    def areas(self) -> List[Area]:
-        if not self._areas:
-            response = self.area.get()
-            for area in response['list']:
-                self._areas.append(Area(self, keys=area))
-        return self._areas
+    def areas(self) -> Iterable[Area]:
+        for area in self.area.get()['list']:
+            Area(self, keys=area)
 
     @property
-    def crop_families(self) -> List[CropFamily]:
-        if not self._crop_families:
-            response = self.term.get("farm_crop_families")
-            for fam in response['list']:
-                self._crop_families.append(CropFamily(self, keys=fam))
-        return self._crop_families
+    def crop_families(self) -> Iterable[CropFamily]:
+        for fam in self.term.get("farm_crop_families")['list']:
+            yield CropFamily(self, keys=fam)
 
     @property
-    def crops(self) -> List[Crop]:
-        if not self._crops:
-            response = self.term.get("farm_crops")
-            for crop in response['list']:
-                c = Crop(self, crop)
-                self._crops.append(c)
-        return self._crops
+    def crops(self) -> Iterable[Crop]:
+        for crop in self.term.get("farm_crops")['list']:
+            yield Crop(self, crop)
 
     @property
-    def equipment(self) ->  List[Equipment]:
-        if not self._equipment:
-            response = self.asset.get({
-                'type': 'equipment'
-            })
-            for equip in response['list']:
-                self._equipment.append(Equipment(self, equip))
-        return self._equipment
+    def equipment(self) ->  Iterable[Equipment]:
+        for equip in self.asset.get({ 'type': 'equipment' })['list']:
+            yield Equipment(self, equip)
 
     @property
-    def plantings(self) -> List[Planting]:
-        if not self._planting:
-            response = self.asset.get({
-                'type': 'planting'
-            })
-            for planting in response['list']:
-                self._planting.append(Planting(self, planting))
-        return self._planting
+    def plantings(self) -> Iterable[Planting]:
+        for planting in self.asset.get({ 'type': 'planting' })['list']:
+            yield Planting(self, planting)
 
     @property
-    def expenses(self) ->  List[Expense]:
-        logs = self.log.get({
-            'type': 'farm_activity'
-        })
-        for log in logs['list']:
-            obj = Expense(self, log)
-            if True:
-                self._expenses.append(obj)
-        return self._expenses
+    def expenses(self) ->  Iterable[Expense]:
+        for log in self.log.get({ 'type': 'farm_activity' })['list']:
+            yield Expense(self, log)
 
     @property
-    def units(self) -> List[Unit]:
-        units = self.term.get('farm_quantity_units')
-        for unit in units['list']:
-            self._units.append(Unit(self, unit))
-        return self._units
+    def units(self) -> Iterable[Unit]:
+        for unit in self.term.get('farm_quantity_units')['list']:
+            yield Unit(self, unit)
 
     @property
-    def harvests(self) -> List[Harvest]:
-        if not self._harvests:
-            self._harvests = self._get_logs('farm_harvest', Harvest)
-        return self._harvests
+    def harvests(self) -> Iterable[Harvest]:
+        return self._get_logs('farm_harvest', Harvest)
 
     @property
-    def seedings(self) -> List[Seeding]:
-        if not self._seedings:
-            self._seedings = self._get_logs('farm_seeding', Seeding)
-        return self._seedings
+    def seedings(self) -> Iterable[Seeding]:
+        return self._get_logs('farm_seeding', Seeding)
 
     @property
-    def transplants(self) -> List[Transplanting]:
-        if not self._transplants:
-            self._transplants = self._get_logs('farm_transplanting', Transplanting)
-        return self._transplants
+    def transplants(self) -> Iterable[Transplanting]:
+        return self._get_logs('farm_transplanting', Transplanting)
 
     @property
-    def observations(self) -> List[Observation]:
-        if not self._observations:
-            self._observations = self._get_logs('farm_observation', Observation)
-        return self._observations
+    def observations(self) -> Iterable[Observation]:
+        return self._get_logs('farm_observation', Observation)
 
 
-    def _get_logs(self, typ: str, obj_class:  Type[Log]):
-        li = []
-        logs = self.log.get({'type': typ})
-        for log in logs['list']:
-            obj = obj_class(self, log)
-            li.append(obj)
-        return li
+    def _get_logs(self, typ: str, obj_class:  Type[Log]) -> Iterable[Type[Log]]:
+        for log in self.log.get({'type': typ})['list']:
+            yield obj_class(self, log)
 
     def _create_log(self, name: str, date: datetime, category: str, fields: Dict, done=False):
         data = {

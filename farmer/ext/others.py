@@ -65,3 +65,7 @@ class Content(FarmObj):
     @property
     def google_maps_api_key(self) -> str:
         return self._basic_prop(self._google_maps_api_key)
+
+    @property
+    def resources(self) -> Dict:
+        return self._basic_prop(self._resources)

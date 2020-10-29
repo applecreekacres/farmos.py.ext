@@ -50,12 +50,12 @@ class FarmObj(object):
                 li.append(obj_class(self._farm, rets))
         return li
 
-    def _basic_prop(prop):
+    def _basic_prop(self, prop):
         """Returns the argument if it is not None"""
         return prop if prop else None
 
 
-    def _ts_to_dt(ts: int) -> datetime:
+    def _ts_to_dt(self, ts: int) -> datetime:
         """Convert timestampt to datetime or return None"""
         return datetime.fromtimestamp(int(ts)) if ts else None
 
