@@ -134,3 +134,6 @@ dmypy.json
 
 # FarmOS Cfg
 farmos.cfg
+
+# Other
+*/tend/*
