@@ -13,10 +13,6 @@ from farmOS import farmOS
 from farmer.ext.area import Area
 from farmer.ext.asset import Asset, Equipment, Planting
 
-HOST = None
-USER = None
-PASS = None
-
 
 def farm():
     """Access to farm with provided credentials."""
@@ -41,23 +37,27 @@ class Farm(farmOS):
     _observations = []
 
     def __init__(self):
+        self._host = None
+        self._user = None
+        self._pass = None
+
         if os.path.exists("farmos.cfg"):
             with open('farmos.cfg') as cfg:
                 for line in cfg.readlines():
                     if line.startswith("HOST"):
-                        HOST = line[line.index("=")+1:].strip()
+                        self._host = line[line.index("=")+1:].strip()
                     if line.startswith("USER"):
-                        USER = line[line.index("=")+1:].strip()
+                        self._user = line[line.index("=")+1:].strip()
                     if line.startswith("PASS"):
-                        PASS = line[line.index("=")+1:].strip()
-            if not HOST:
+                        self._pass = line[line.index("=")+1:].strip()
+            if not self._host:
                 Exception("HOST key is not defined in farmos.cfg")
-            if not USER:
+            if not self._user:
                 Exception("USER key is not defined in farmos.cfg")
-            if not PASS:
+            if not self._pass:
                 Exception("PASS key is not defined in farmos.cfg")
-        super().__init__(HOST)
-        self._token = self.authorize(USER, PASS)
+        super().__init__(self._host)
+        self._token = self.authorize(self._user, self._pass)
 
     def reset(self):
         self._areas = []
