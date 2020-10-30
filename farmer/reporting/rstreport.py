@@ -1,7 +1,11 @@
 
 from __future__ import annotations
+
+from typing import Dict, List, Union
+
 from farmer.reporting.report import Report
-from typing import Dict, List, Type, Union
+
+# import pypandoc
 
 TITLE = "="
 
@@ -12,6 +16,7 @@ HEADING = [
     "^",
     "*"
 ]
+
 
 class RstReporter(Report):
 
@@ -27,7 +32,8 @@ class RstReporter(Report):
         self.save()
 
     def _sanitize(self, text: str):
-        cleaned = text.replace("<p>", "").replace("</p>", "").replace("&nbsp;", "\n").replace("\n\n", "\n")
+        cleaned = text.replace("<p>", "").replace(
+            "</p>", "").replace("&nbsp;", "\n").replace("\n\n", "\n")
         return cleaned.replace("\n\n", "\n")
 
     def _append(self, text):
@@ -37,7 +43,8 @@ class RstReporter(Report):
         if text is not None:
             self._append("{}\n".format(text))
 
-    def directive(self, name: Union[str, Dict[str, str]], configs: List[Union[str, Dict[str, str]]]):
+    def directive(self, name: Union[str, Dict[str, str]],
+                  configs: Union[None, List[Union[str, Dict[str, str]]]]):
         self.line()
         if isinstance(name, str):
             self.line(".. {}::".format(name))
@@ -79,7 +86,7 @@ class RstReporter(Report):
         self.directive("contents", ["local", {"depth": depth}])
 
     def pagebreak(self):
-        self.directive({"raw": "pdf"})
+        self.directive({"raw": "pdf"}, None)
         self.line("    PageBreak")
         self.line()
 
@@ -87,13 +94,15 @@ class RstReporter(Report):
         def row(cols: List[str], widths: List[int]):
             new_list = []
             for index, col in enumerate(cols):
-                new_list.append("{col:{width}}".format(col=col, width=widths[index]))
+                new_list.append("{col:{width}}".format(
+                    col=col, width=widths[index]))
             return "| {} |".format(" | ".join(new_list))
 
         def sep(widths: List[int]):
-            self.line("+{}+".format("+".join(["-"*(index+2) for index in widths])))
+            self.line(
+                "+{}+".format("+".join(["-"*(index+2) for index in widths])))
 
-        keys = items[0].keys()
+        keys = list(items[0].keys())
         col_widths = [0] * len(keys)
         for index, key in enumerate(keys):
             if len(key) > col_widths[index]:
@@ -110,8 +119,10 @@ class RstReporter(Report):
             self.line(row([item[key] for key in keys], col_widths))
             sep(col_widths)
 
-
     def save(self, pdf=False):
-        path = "{}.rst".format(self.filename) if not self.filename.endswith(".rst") else self.filename
+        path = "{}.rst".format(self.filename) if not self.filename.endswith(
+            ".rst") else self.filename
         with open(path, 'w', encoding='utf-8') as rst:
             rst.write(self._doc)
+        # pypandoc.convert_file(path, "pdf",
+        #                       outputfile=path.replace(".rst", ".pdf"), )

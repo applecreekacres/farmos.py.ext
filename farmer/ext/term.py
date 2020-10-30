@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Dict, List
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional
 
 from farmer.ext.farmobj import FarmObj
 from farmOS import farmOS
@@ -12,34 +13,47 @@ class Term(FarmObj):
         if 'resource' not in keys:
             super(Term, self).__init__(farm, keys)
         elif 'resource' in keys and keys['resource'] == 'taxonomy_term':
-            super(Term, self).__init__(farm, farm.term.get(keys['id']))
+            super(Term, self).__init__(farm, farm.term.get(
+                {"tid": int(keys['id'])})['list'][0])
         else:
             raise KeyError('Key resource does not have value taxonomy_term')
 
     @property
-    def tid(self) -> int:
-        return int(self._tid) if self._tid else None
+    def tid(self) -> Optional[int]:
+        return int(self._keys['tid']) if self._keys['tid'] else None
 
     @property
-    def weight(self) -> int:
-        return int(self._weight) if self._weight else None
+    def weight(self) -> Optional[int]:
+        return int(self._keys['weight']) if self._keys['weight'] else None
 
     @property
     def description(self) -> str:
-        return self._basic_prop(self._description)
+        return FarmObj._basic_prop(self._keys['description'])
 
     @property
     def parent(self) -> List[Term]:
-        return self._get_terms(self._parent, Term) if self._parent else None
+        return self._get_terms(self._keys['parent'], Term)
 
     @property
-    def vocabulary(self) -> Dict:
-        return FarmObj(self, self._vocabulary) if self._vocabulary else None
-
+    def vocabulary(self) -> Optional[Dict]:
+        return FarmObj._basic_prop(self._keys['vocabulary'])
 
 
 class Season(Term):
-    pass
+
+    @property
+    def start_date(self) -> Optional[datetime]:
+        return FarmObj._ts_to_dt(self._keys['date_range']['value'])
+
+    @property
+    def end_date(self) -> Optional[datetime]:
+        return FarmObj._ts_to_dt(self._keys['date_range']['value2'])
+
+    @property
+    def duration(self) -> Optional[timedelta]:
+        if self.start_date and self.end_date:
+            return self.end_date - self.start_date
+        return None
 
 
 class CropFamily(Term):
@@ -49,28 +63,31 @@ class CropFamily(Term):
 class Crop(Term):
 
     @property
-    def companions(self):
-        return self._get_terms(self._companions, Crop) if self._companions else None
+    def companions(self) -> List[Crop]:
+        return self._get_terms(self._keys['companions'], Crop)
 
     @property
-    def crop_family(self) -> CropFamily:
-        return CropFamily(self._farm, self._crop_family) if hasattr(self, '_crop_family') else None
+    def crop_family(self) -> Optional[CropFamily]:
+        key = self._keys['crop_family']
+        return CropFamily(self._farm, key) if key else None
 
     @property
     def images(self) -> List:
-        return self._basic_prop(self._images)
+        return FarmObj._basic_prop(self._keys['images'])
 
     @property
-    def maturity_days(self) -> int:
-        return int(self._maturity_days) if self._maturity_days else None
+    def maturity_days(self) -> Optional[int]:
+        key = self._keys['maturity_days']
+        return int(self._keys['maturity_days']) if key else None
 
     @property
     def parents_all(self) -> List[Crop]:
-        return self._get_terms(self._parents_all, Crop) if self._parents_all else None
+        return self._get_terms(self._keys['parents_all'], Crop)
 
     @property
-    def transplant_days(self) -> int:
-        return int(self._transplant_days) if self._transplant_days else None
+    def transplant_days(self) -> Optional[int]:
+        key = self._get_key('transplant_days')
+        return int(key) if key else None
 
 
 class Unit(FarmObj):
@@ -79,4 +96,3 @@ class Unit(FarmObj):
 
 class Category(FarmObj):
     pass
-

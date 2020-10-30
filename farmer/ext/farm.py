@@ -1,17 +1,18 @@
 """Main farm access."""
 
 from __future__ import annotations
-from farmer.ext.log import Expense, Harvest, Log, Observation, Seeding, Transplanting
-from farmer.ext.term import CropFamily, Season, Unit, Crop
-from farmer.ext.others import Content, Quantity
 
 import os
 from datetime import datetime
-from typing import Dict, Generator, Iterable, List, Type
+from typing import Dict, Iterable, List, Type
 
-from farmOS import farmOS
 from farmer.ext.area import Area
 from farmer.ext.asset import Asset, Equipment, Planting
+from farmer.ext.log import (Expense, Harvest, Log, Observation, Seeding,
+                            Transplanting)
+from farmer.ext.others import Content, Quantity
+from farmer.ext.term import Crop, CropFamily, Season, Unit
+from farmOS import farmOS
 
 
 def farm():
@@ -53,7 +54,7 @@ class Farm(farmOS):
         for season in self.term.get("farm_season")['list']:
             yield Season(self, season)
 
-    def assets(self, filters={}) ->  Iterable[Asset]:
+    def assets(self, filters={}) -> Iterable[Asset]:
         for asset in self.asset.get(filters)['list']:
             yield Asset(self, keys=asset)
 
@@ -73,14 +74,14 @@ class Farm(farmOS):
             yield Crop(self, crop)
 
     def equipment(self, filters=dict()) -> Iterable[Equipment]:
-        filters.update({ 'type': 'equipment' })
+        filters.update({'type': 'equipment'})
         return self._get_assets(Equipment, filters)
 
     def plantings(self, filters=dict()) -> Iterable[Planting]:
-        filters.update({ 'type': 'planting' })
+        filters.update({'type': 'planting'})
         return self._get_assets(Planting, filters)
 
-    def expenses(self, filters=dict()) ->  Iterable[Expense]:
+    def expenses(self, filters=dict()) -> Iterable[Expense]:
         filters.update({'log_category': 'Expense'})
         return self._get_logs(Expense, filters)
 
@@ -108,7 +109,6 @@ class Farm(farmOS):
     def _get_assets(self, obj_class: Type[Asset], filters={}) -> Iterable[Type[Asset]]:
         for asset in self.asset.get(filters)['list']:
             yield obj_class(self, asset)
-
 
     def _get_logs(self, obj_class: Type[Log], filters=None) -> Iterable[Type[Log]]:
         for log in self.log.get(filters)['list']:

@@ -123,7 +123,7 @@ def prompt(message: str, validator=None, completion=None) -> str:
     return response
 
 
-def prompt_date(message: str) -> datetime:
+def prompt_date(message: str) -> date:
     """Request date from user.
 
     Arguments:

@@ -4,6 +4,7 @@ from farmer.ext.farmobj import FarmObj
 from typing import Union, Dict
 from enum import Enum
 
+
 class Measure(Enum):
     COUNT = 'count'
     LENGTH = 'length'
@@ -16,6 +17,7 @@ class Measure(Enum):
     RATING = 'rating'
     RATIO = 'ratio'
     PROBABILITY = 'probability'
+
 
 @dataclass
 class Quantity():
@@ -44,28 +46,28 @@ class Content(FarmObj):
 
     @property
     def api_version(self) -> Union[str, None]:
-        return self._basic_prop(self._api_version)
+        return FarmObj._basic_prop(self._keys['api_version'])
 
     @property
     def system_of_measurement(self) -> Union[str, None]:
-        return self._basic_prop(self._system_of_measurement)
+        return FarmObj._basic_prop(self._keys['system_of_measurement'])
 
     @property
     def metrics(self) -> Dict:
-        return self._basic_prop(self._metrics)
+        return FarmObj._basic_prop(self._keys['metrics'])
 
     @property
     def mapbox_api_key(self) -> str:
-        return self._basic_prop(self._mapbox_api_key)
+        return FarmObj._basic_prop(self._keys['mapbox_api_key'])
 
     @property
     def languages(self) -> Dict:
-        return self._basic_prop(self._languages)
+        return FarmObj._basic_prop(self._keys['languages'])
 
     @property
     def google_maps_api_key(self) -> str:
-        return self._basic_prop(self._google_maps_api_key)
+        return FarmObj._basic_prop(self._keys['google_maps_api_key'])
 
     @property
     def resources(self) -> Dict:
-        return self._basic_prop(self._resources)
+        return FarmObj._basic_prop(self._keys['resources'])

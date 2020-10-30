@@ -1,16 +1,17 @@
 
 from datetime import datetime
-from typing import Dict, List
+from typing import Any, Dict, List, Optional
 
 from farmOS import farmOS
 
 
 class FarmObj(object):
 
-    _farm = None
+    _farm: farmOS
 
     def __init__(self, farm: farmOS, keys: Dict = None):
         self._farm = farm
+        self._keys = keys
         if keys:
             for key in keys:
                 setattr(self, '_{}'.format(key), keys[key])
@@ -50,19 +51,22 @@ class FarmObj(object):
                 li.append(obj_class(self._farm, rets))
         return li
 
-    def _basic_prop(self, prop):
-        """Returns the argument if it is not None"""
+    @staticmethod
+    def _basic_prop(prop: Any) -> Any:
+        """Returns the argument if it is not None."""
         return prop if prop else None
 
-
-    def _ts_to_dt(self, ts: int) -> datetime:
-        """Convert timestampt to datetime or return None"""
+    @staticmethod
+    def _ts_to_dt(ts: int) -> Optional[datetime]:
+        """Convert timestampt to datetime or return None."""
         return datetime.fromtimestamp(int(ts)) if ts else None
+
+    def _get_key(self, key: str) -> Optional[str]:
+        if key in self._keys:
+            return self._keys[key]
+        else:
+            return None
 
     @property
     def name(self) -> str:
-        return self._basic_prop(self._name)
-
-    @property
-    def url(self) -> str:
-        return self._basic_prop(self._url)
+        return FarmObj._basic_prop(self._keys['name'])
