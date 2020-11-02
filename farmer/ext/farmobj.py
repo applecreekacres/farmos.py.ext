@@ -12,9 +12,6 @@ class FarmObj(object):
     def __init__(self, farm: farmOS, keys: Dict = None):
         self._farm = farm
         self._keys = keys
-        if keys:
-            for key in keys:
-                setattr(self, '_{}'.format(key), keys[key])
 
     def _get_terms(self, items: List[Dict], obj_class):
         li = []
@@ -61,7 +58,7 @@ class FarmObj(object):
         """Convert timestampt to datetime or return None."""
         return datetime.fromtimestamp(int(ts)) if ts else None
 
-    def _get_key(self, key: str) -> Optional[str]:
+    def _get_key(self, key: str) -> Optional[Any]:
         if key in self._keys:
             return self._keys[key]
         else:

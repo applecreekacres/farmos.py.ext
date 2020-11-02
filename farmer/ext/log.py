@@ -23,12 +23,11 @@ class Log(FarmObj):
 
     @property
     def id(self) -> Optional[int]:
-        key = self._keys['id']
-        return int(key) if key else None
+        return self._attr('id', int)
 
     @property
     def type(self) -> str:
-        return FarmObj._basic_prop(self._keys['type'])
+        return self._attr('type', str)
 
     @property
     def timestamp(self) -> Optional[datetime]:
@@ -36,7 +35,7 @@ class Log(FarmObj):
 
     @property
     def done(self) -> bool:
-        return bool(self._keys['done'])
+        return bool(self._attr('done', int))
 
     @property
     def notes(self) -> Optional[str]:
@@ -44,28 +43,42 @@ class Log(FarmObj):
 
     @property
     def asset(self) -> List[Asset]:
-        key = self._keys['asset']
-        return self._get_assets(key, Asset)
+        key = self._get_key('asset')
+        if key:
+            return self._get_assets(key, Asset)
+        else:
+            return []
 
     @property
     def equipment(self) -> List[Equipment]:
-        return self._get_assets(self._keys['equipment'], Equipment)
+        key = self._get_key('equipment')
+        if key:
+            return self._get_assets(self._keys['equipment'], Equipment)
+        else:
+            return []
 
     @property
     def area(self) -> List[Area]:
-        return self._get_areas(self._keys['area'], Area)
+        key = self._get_key('area')
+        if key:
+            return self._get_areas(key, Area)
+        else:
+            return []
 
     @property
     def geofield(self) -> str:
-        return FarmObj._basic_prop(self._keys['geofield'])
+        return self._attr('geofield', str)
 
     @property
     def movement(self) -> List[Area]:
-        return self._get_areas(self._keys['movement']['area'], Area)
+        key = self._get_key('movement')['area']
+        if key:
+            return self._get_areas(key, Area)
+        return []
 
     @property
     def membership(self):
-        return FarmObj._basic_prop(self._keys['membership'])
+        return self._attr('membership', str)
 
     @property
     def quantity(self) -> List[Quantity]:
@@ -81,15 +94,15 @@ class Log(FarmObj):
 
     @property
     def images(self) -> List:
-        return FarmObj._basic_prop(self._keys['images'])
+        return self._attr('images', str)
 
     @property
     def files(self) -> List:
-        return FarmObj._basic_prop(self._keys['files'])
+        return self._attr('files', str)
 
     @property
     def flags(self) -> str:
-        return FarmObj._basic_prop(self._keys['flags'])
+        return self._attr('flags', str)
 
     @property
     def categories(self) -> List[Category]:
@@ -98,7 +111,7 @@ class Log(FarmObj):
 
     @property
     def owner(self):
-        return FarmObj._basic_prop(self._keys['log_owner'])
+        return self._attr('log_owner', str)
 
     @property
     def created(self) -> Optional[datetime]:
@@ -115,7 +128,7 @@ class Log(FarmObj):
 
     @property
     def data(self) -> str:
-        return FarmObj._basic_prop(self._keys['data'])
+        return self._attr('data', str)
 
     @property
     def inventory(self) -> List[Inventory]:
@@ -131,7 +144,7 @@ class LotLog(Log):
 
     @property
     def lot_number(self) -> str:
-        return FarmObj._basic_prop(self._keys['lot_number'])
+        return self._attr('lot_number', str)
 
 
 # TODO cleanup property returns

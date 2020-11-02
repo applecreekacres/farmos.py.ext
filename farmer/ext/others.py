@@ -17,6 +17,7 @@ class Measure(Enum):
     RATING = 'rating'
     RATIO = 'ratio'
     PROBABILITY = 'probability'
+    WEIGHT = 'weight'
 
 
 @dataclass
