@@ -1,6 +1,5 @@
 
 from datetime import datetime
-from farmer.ext.farm import Farm
 from typing import Dict, List, Optional
 
 from farmer import Area
