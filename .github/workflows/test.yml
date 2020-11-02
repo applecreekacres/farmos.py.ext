@@ -21,16 +21,11 @@ jobs:
         python-version: 3.7
     - uses: dschep/install-pipenv-action@v1
     - run: pipenv install -d
-    - uses: DamianReeves/write-file-action@v1.0
+    - run: echo "HOST=$HOST\nUSER=$USER\nPASS=$PASS" >> farmos.cfg
       env:
         HOST: ${{ secrets.FARMOS_HOST }}
         USER: ${{ secrets.FARMOS_USER }}
         PASS: ${{ secrets.FARMOS_PASS}}
-      with:
-        path: farmos.cfg
-        write-mode: overwrite
-        contents: |
-          echo "HOST=$HOST\nUSER=$USER\nPASS=$PASS"
     - run: pipenv run coverage run --source=. -m pytest
     - run: pipenv run coveralls
       env:
