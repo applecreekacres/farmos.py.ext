@@ -22,7 +22,7 @@ jobs:
     - uses: dschep/install-pipenv-action@v1
     - run: pipenv install -d
     - run: pipenv run coverage -- run --source=farmer -m pytest
-    - run: coveralls
+    - run: pipenv run coveralls
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
