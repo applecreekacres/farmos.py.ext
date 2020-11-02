@@ -10,6 +10,7 @@ rope = "*"
 autopep8 = "*"
 pylint = "*"
 pytest = "*"
+coveralls = "*"
 
 [packages]
 farmos = "*"
