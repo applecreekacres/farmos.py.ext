@@ -23,7 +23,7 @@ jobs:
     - run: pipenv install -d
     - uses: DamianReeves/write-file-action@v1.0
       with:
-        path: ${{ env.HOME }}/farmos.cfg
+        path: farmos.cfg
         write-mode: overwrite
         contents: |
           echo "HOST=${{ secrets.FARMOS_HOST }}"
