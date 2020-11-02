@@ -46,8 +46,10 @@ class Farm(farmOS):
                 Exception("USER key is not defined in farmos.cfg")
             if not self._pass:
                 Exception("PASS key is not defined in farmos.cfg")
-        super().__init__(self._host)
-        self._token = self.authorize(self._user, self._pass)
+            super().__init__(self._host)
+            self._token = self.authorize(self._user, self._pass)
+        else:
+            raise Exception('farmos.cfg not found.')
 
     def _get_assets(self, obj_class: Type[Asset], filters={}) -> Iterator[Type[Asset]]:
         for asset in self.asset.get(filters)['list']:
