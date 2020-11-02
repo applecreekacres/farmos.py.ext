@@ -21,7 +21,15 @@ jobs:
         python-version: 3.7
     - uses: dschep/install-pipenv-action@v1
     - run: pipenv install -d
-    - run: pipenv run coverage -- run --source=farmer -m pytest
+    - uses: DamianReeves/write-file-action@v1.0
+      with:
+        path: ${{ env.HOME }}/farmos.cfg
+        write-mode: overwrite
+        contents: |
+          echo "HOST=${{ secrets.FARMOS_HOST }}"
+          echo "USER=${{ secrets.FARMOS_USER }}"
+          echo "PASS=${{ secrets.FARMOS_PASS }}"
+    - run: pipenv run coverage -- run --source=. -m pytest
     - run: pipenv run coveralls
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
