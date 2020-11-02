@@ -160,9 +160,33 @@ class Harvest(Log):
         return FarmObj._basic_prop(self._keys['lot_number'])
 
 
-class Expense(Log):
+class Observation(Log):
     pass
 
 
-class Observation(Log):
+class Maintenance(Log):
+    pass
+
+
+class Purchase(Log):
+    pass
+
+
+class Birth(Log):
+    pass
+
+
+class Medical(Log):
+    pass
+
+
+class Sale(Log):
+    pass
+
+
+class Activity(Log):
+    pass
+
+
+class SoilTest(Log):
     pass

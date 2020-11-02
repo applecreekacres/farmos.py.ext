@@ -4,15 +4,19 @@ from __future__ import annotations
 
 import os
 from datetime import datetime
-from typing import Dict, Iterable, List, Type
+from typing import Dict, Iterable, Iterator, List, Type
 
 from farmer.ext.area import Area
 from farmer.ext.asset import Asset, Equipment, Planting
-from farmer.ext.log import (Expense, Harvest, Log, Observation, Seeding,
+from farmer.ext.log import (Activity, Birth, Harvest, Input, Log, Maintenance, Medical, Observation, Purchase, Sale, Seeding, SoilTest,
                             Transplanting)
 from farmer.ext.others import Content, Quantity
 from farmer.ext.term import Crop, CropFamily, Season, Unit
 from farmOS import farmOS
+
+
+class FarmTypeMissingError(Exception):
+    pass
 
 
 def farm():
@@ -45,12 +49,35 @@ class Farm(farmOS):
         super().__init__(self._host)
         self._token = self.authorize(self._user, self._pass)
 
+    def _get_assets(self, obj_class: Type[Asset], filters={}) -> Iterator[Type[Asset]]:
+        for asset in self.asset.get(filters)['list']:
+            yield obj_class(self, asset)
+
+    def _get_logs(self, obj_class: Type[Log], filters=None) -> Iterator[Type[Log]]:
+        for log in self.log.get(filters)['list']:
+            yield obj_class(self, log)
+
+    def _create_log(self, name: str, date: datetime, category: str, fields: Dict, done=False):
+        data = {
+            "name": name,
+            "timestamp": str(int(datetime.timestamp(date))),
+            "log_category": [{
+                "name": category
+            }],
+            "type": "farm_observation"
+        }
+        data.update(fields)
+        if 'done' not in data:
+            data['done'] = '1' if done else '0'
+        ret = self.log.send(data)
+        return ret
+
     @property
     def content(self) -> Content:
         return Content(self, keys=self.info())
 
     @property
-    def seasons(self) -> Iterable[Season]:
+    def seasons(self) -> Iterator[Season]:
         for season in self.term.get("farm_season")['list']:
             yield Season(self, season)
 
@@ -81,53 +108,94 @@ class Farm(farmOS):
         filters.update({'type': 'planting'})
         return self._get_assets(Planting, filters)
 
-    def expenses(self, filters=dict()) -> Iterable[Expense]:
-        filters.update({'log_category': 'Expense'})
-        return self._get_logs(Expense, filters)
-
     @property
     def units(self) -> Iterable[Unit]:
         for unit in self.term.get('farm_quantity_units')['list']:
             yield Unit(self, unit)
 
     def harvests(self, filters=dict()) -> Iterable[Harvest]:
-        filters.update({'type': 'farm_harvest'})
-        return self._get_logs(Harvest, filters)
+        if 'farm_harvests' in self.content.resources['log']:
+            filters.update({'type': 'farm_harvest'})
+            return self._get_logs(Harvest, filters)
+        else:
+            raise FarmTypeMissingError("Harvest logs not supported.")
 
     def seedings(self, filters=dict()) -> Iterable[Seeding]:
-        filters.update({'type': 'farm_seeding'})
-        return self._get_logs(Seeding, filters)
+        if 'farm_seedings' in self.content.resources['log']:
+            filters.update({'type': 'farm_seeding'})
+            return self._get_logs(Seeding, filters)
+        else:
+            raise FarmTypeMissingError("Seeding logs not supported.")
 
     def transplants(self, filters=dict()) -> Iterable[Transplanting]:
-        filters.update({'type': 'farm_transplanting'})
-        return self._get_logs(Transplanting, filters)
+        if 'farm_transplanting' in self.content.resources['log']:
+            filters.update({'type': 'farm_transplanting'})
+            return self._get_logs(Transplanting, filters)
+        else:
+            raise FarmTypeMissingError("Transplanting logs not supported.")
 
     def observations(self, filters=dict()) -> Iterable[Observation]:
-        filters.update({'type': 'farm_observation'})
-        return self._get_logs(Observation, filters)
+        if 'farm_observation' in self.content.resources['log']:
+            filters.update({'type': 'farm_observation'})
+            return self._get_logs(Observation, filters)
+        else:
+            raise FarmTypeMissingError("Observation logs not supported.")
 
-    def _get_assets(self, obj_class: Type[Asset], filters={}) -> Iterable[Type[Asset]]:
-        for asset in self.asset.get(filters)['list']:
-            yield obj_class(self, asset)
+    def maintenances(self, filters=dict()) -> Iterator[Maintenance]:
+        if 'farm_maintenance' in self.content.resources['log']:
+            filters.update({'type': 'farm_observation'})
+            return self._get_logs(Maintenance, filters)
+        else:
+            raise FarmTypeMissingError("Maintenance logs not supported.")
 
-    def _get_logs(self, obj_class: Type[Log], filters=None) -> Iterable[Type[Log]]:
-        for log in self.log.get(filters)['list']:
-            yield obj_class(self, log)
+    def purchases(self, filters=dict()) -> Iterator[Purchase]:
+        if 'farm_purchase' in self.content.resources['log']:
+            filters.update({'type': 'farm_purchase'})
+            return self._get_logs(Purchase, filters)
+        else:
+            raise FarmTypeMissingError("Purchase logs not supported.")
 
-    def _create_log(self, name: str, date: datetime, category: str, fields: Dict, done=False):
-        data = {
-            "name": name,
-            "timestamp": str(int(datetime.timestamp(date))),
-            "log_category": [{
-                "name": category
-            }],
-            "type": "farm_observation"
-        }
-        data.update(fields)
-        if 'done' not in data:
-            data['done'] = '1' if done else '0'
-        ret = self.log.send(data)
-        return ret
+    def sales(self, filters={}) -> Iterator[Sale]:
+        if 'farm_sale' in self.content.resources['log']:
+            filters.update({'type': 'farm_sale'})
+            return self._get_logs(Sale, filters)
+        else:
+            raise FarmTypeMissingError("Sale logs not supported.")
+
+    def births(self, filters={}) -> Iterator[Birth]:
+        if 'farm_birth' in self.content.resources['log']:
+            filters.update({'type': 'farm_birth'})
+            return self._get_logs(Birth, filters)
+        else:
+            raise FarmTypeMissingError("Birth logs not supported.")
+
+    def inputs(self, filters={}) -> Iterator[Input]:
+        if 'farm_input' in self.content.resources['input']:
+            filters.update({'type': 'farm_input'})
+            return self._get_logs(Input, filters)
+        else:
+            raise FarmTypeMissingError("Input logs not supported.")
+
+    def soil_tests(self, filters={}) -> Iterator[SoilTest]:
+        if 'farm_soil_test' in self.content.resources['log']:
+            filters.update({'type': 'farm_soil_test'})
+            return self._get_logs(SoilTest, filters)
+        else:
+            raise FarmTypeMissingError("Soil test logs not supported.")
+
+    def activities(self, filters={}) -> Iterator[Activity]:
+        if 'farm_activity' in self.content.resources['log']:
+            filters.update({'type': 'farm_activity'})
+            return self._get_logs(Activity, filters)
+        else:
+            raise FarmTypeMissingError("Activity logs not supported.")
+
+    def medicals(self, filters={}) -> Iterator[Medical]:
+        if 'farm_medical' in self.content.resources['log']:
+            filters.update({'type': 'farm_medical'})
+            return self._get_logs(Medical, filters)
+        else:
+            raise FarmTypeMissingError("Medical logs are not supported.")
 
     def create_planting(self, crop: Crop, season: str, location: str) -> Planting:
         ret = self.asset.send({
