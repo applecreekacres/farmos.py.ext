@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Dict, List, Union
 
 from farmer.ext.farmobj import FarmObj
-from farmer.ext.term import Crop
+from farmer.ext.term import Crop, Season
 
 
 class Asset(FarmObj):
@@ -72,6 +72,10 @@ class Planting(Asset):
     def crop(self) -> List[Crop]:
         return self._get_terms(self._keys['crop'], Crop)
 
+    @property
+    def season(self):
+        return None
+
 
 class Animal(Asset):
 
@@ -117,3 +121,11 @@ class Equipment(Asset):
     @property
     def serial_number(self) -> str:
         return FarmObj._basic_prop(self._keys['serial_number'])
+
+
+class Sensor(Asset):
+    pass
+
+
+class Compost(Asset):
+    pass
