@@ -25,7 +25,7 @@ jobs:
       env:
         HOST: ${{ secrets.FARMOS_HOST }}
         USER: ${{ secrets.FARMOS_USER }}
-        PASS: ${{ secrets.FARMOS_PASS}}
+        PASS: ${{ secrets.FARMOS_PASS }}
     - run: pipenv run coverage run --source=. -m pytest
     - run: pipenv run coveralls
       env:
