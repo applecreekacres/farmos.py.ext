@@ -21,9 +21,9 @@ jobs:
         python-version: 3.7
     - uses: dschep/install-pipenv-action@v1
     - run: pipenv install -d
-    - run: coverage run --source=farmer -m pytest
+    - run: pipenv run coverage -- run --source=farmer -m pytest
     - run: coveralls
       env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.GH_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
 
