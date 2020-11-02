@@ -26,7 +26,7 @@ jobs:
         HOST: ${{ secrets.FARMOS_HOST }}
         USER: ${{ secrets.FARMOS_USER }}
         PASS: ${{ secrets.FARMOS_PASS }}
-    - run: pipenv run coverage run --source=. -m pytest
+    - run: pipenv run coverage run --source=farmer -m pytest
     - run: pipenv run coveralls
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
