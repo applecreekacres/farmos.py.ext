@@ -30,9 +30,7 @@ jobs:
         path: farmos.cfg
         write-mode: overwrite
         contents: |
-          echo "HOST=$HOST"
-          echo "USER=$USER"
-          echo "PASS=$PASS"
+          echo "HOST=$HOST\nUSER=$USER\nPASS=$PASS"
     - run: pipenv run coverage run --source=. -m pytest
     - run: pipenv run coveralls
       env:
