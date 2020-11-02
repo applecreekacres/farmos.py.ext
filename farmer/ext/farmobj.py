@@ -1,6 +1,6 @@
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Type
 
 from farmOS import farmOS
 
@@ -66,6 +66,13 @@ class FarmObj(object):
             return self._keys[key]
         else:
             return None
+
+    def _attr(self, key: str, ret_type: Type[Any]) -> Type[Any]:
+        value = FarmObj._basic_prop(self._get_key(key))
+        if value:
+            return ret_type(value)
+        else:
+            return value
 
     @property
     def name(self) -> str:
