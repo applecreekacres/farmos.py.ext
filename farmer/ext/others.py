@@ -1,7 +1,7 @@
 
 from dataclasses import dataclass
 from farmer.ext.farmobj import FarmObj
-from typing import Union, Dict
+from typing import List, Type, Union, Dict
 from enum import Enum
 
 
@@ -38,6 +38,18 @@ class Quantity():
         }
 
 
+@dataclass
+class Inventory():
+    value: int
+    asset_id: int
+
+    def to_dict(self):
+        return {
+            "asset": {"id": self.asset_id},
+            "value": str(self.value)
+        }
+
+
 class User(FarmObj):
     pass
 
@@ -71,3 +83,7 @@ class Content(FarmObj):
     @property
     def resources(self) -> Dict:
         return FarmObj._basic_prop(self._keys['resources'])
+
+
+class Soil(FarmObj):
+    pass

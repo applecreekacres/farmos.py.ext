@@ -1,12 +1,13 @@
 
 from datetime import datetime
+from farmer.ext.farm import Farm
 from typing import Dict, List, Optional
 
 from farmer import Area
 from farmer.ext.asset import Asset, Equipment
 from farmer.ext.farmobj import FarmObj
-from farmer.ext.others import Quantity
-from farmer.ext.term import Category
+from farmer.ext.others import Inventory, Quantity, Soil
+from farmer.ext.term import Category, Unit
 from farmOS import farmOS
 
 
@@ -117,8 +118,44 @@ class Log(FarmObj):
     def data(self) -> str:
         return FarmObj._basic_prop(self._keys['data'])
 
+    @property
+    def inventory(self) -> List[Inventory]:
+        if self._keys['inventory']:
+            ret = []
+            for inventory in self._keys['inventory']:
+                ret.append(Inventory(inventory['value'], inventory['asset']['id']))
+            return ret
+        return []
 
-class Input(Log):
+
+class LotLog(Log):
+
+    @property
+    def lot_number(self) -> str:
+        return FarmObj._basic_prop(self._keys['lot_number'])
+
+
+# TODO cleanup property returns
+class MoneyLog(LotLog):
+
+    @property
+    def units(self) -> List[Unit]:
+        return []
+
+    @property
+    def values(self) -> List:
+        return []
+
+    @property
+    def total_price(self) -> float:
+        return FarmObj._basic_prop(self._keys['total_price'])
+
+    @property
+    def unit_price(self) -> float:
+        return FarmObj._basic_prop(self._keys['unit_price'])
+
+
+class Input(LotLog):
 
     @property
     def material(self) -> str:
@@ -140,24 +177,20 @@ class Input(Log):
     def date_purchase(self) -> Optional[datetime]:
         return FarmObj._ts_to_dt(self._keys['date_purchase'])
 
+
+class Seeding(LotLog):
+
     @property
-    def lot_number(self) -> str:
-        return FarmObj._basic_prop(self._keys['lot_number'])
-
-
-class Seeding(Log):
-    pass
+    def seed_source(self) -> str:
+        return FarmObj._basic_prop(self._keys['seed_source'])
 
 
 class Transplanting(Log):
     pass
 
 
-class Harvest(Log):
-
-    @property
-    def lot_number(self) -> str:
-        return FarmObj._basic_prop(self._keys['lot_number'])
+class Harvest(LotLog):
+    pass
 
 
 class Observation(Log):
@@ -168,8 +201,11 @@ class Maintenance(Log):
     pass
 
 
-class Purchase(Log):
-    pass
+class Purchase(MoneyLog):
+
+    @property
+    def seller(self) -> str:
+        return FarmObj._basic_prop(self._keys['seller'])
 
 
 class Birth(Log):
@@ -181,7 +217,14 @@ class Medical(Log):
 
 
 class Sale(Log):
-    pass
+
+    @property
+    def invoice_number(self) -> str:
+        return FarmObj._basic_prop(self._keys['invoice_number'])
+
+    @property
+    def customer(self) -> str:
+        return FarmObj._basic_prop(self._get_key('customer'))
 
 
 class Activity(Log):
@@ -189,4 +232,12 @@ class Activity(Log):
 
 
 class SoilTest(Log):
-    pass
+
+    @property
+    def soil_lab(self) -> str:
+        return FarmObj._basic_prop(self._get_key('soil_lab'))
+
+    # TODO Fix return
+    @property
+    def soil_names(self) -> List[Soil]:
+        return []
