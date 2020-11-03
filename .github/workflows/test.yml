@@ -21,7 +21,10 @@ jobs:
         python-version: 3.7
     - uses: dschep/install-pipenv-action@v1
     - run: pipenv install -d
-    - run: echo "HOST=$HOST\nUSER=$USER\nPASS=$PASS" >> farmos.cfg
+    - run: |
+        echo "HOST=$HOST" >> farmos.cfg
+        echo "USER=$USER" >> farmos.cfg
+        echo "PASS=$PASS" >> farmos.cfg
       env:
         HOST: ${{ secrets.FARMOS_HOST }}
         USER: ${{ secrets.FARMOS_USER }}
