@@ -5,8 +5,14 @@
         120
     ],
     "restructuredtext.confPath": "",
-    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.typeCheckingMode": "off",
     "python.linting.pylintUseMinimalCheckers": false,
     "python.dataScience.debugJustMyCode": false,
-    "pythonTestExplorer.testFramework": "pytest"
+    "pythonTestExplorer.testFramework": "pytest",
+    "python.linting.pylintEnabled": true,
+    "[python]": {
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        }
+    }
 }
