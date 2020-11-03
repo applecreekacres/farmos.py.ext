@@ -31,4 +31,3 @@ jobs:
         use-flake8: false
         use-isort: false
         use-black: false
-        use-vulture: false
