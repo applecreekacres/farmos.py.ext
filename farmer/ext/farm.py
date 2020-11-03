@@ -41,11 +41,11 @@ class Farm(farmOS):
                     if line.startswith("PASS"):
                         self._pass = line[line.index("=")+1:].strip()
             if not self._host:
-                Exception("HOST key is not defined in farmos.cfg")
+                raise KeyError("HOST key is not defined in farmos.cfg")
             if not self._user:
-                Exception("USER key is not defined in farmos.cfg")
+                raise KeyError("USER key is not defined in farmos.cfg")
             if not self._pass:
-                Exception("PASS key is not defined in farmos.cfg")
+                raise KeyError("PASS key is not defined in farmos.cfg")
             super().__init__(self._host)
             self._token = self.authorize(self._user, self._pass)
         else:
