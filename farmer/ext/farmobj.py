@@ -58,14 +58,14 @@ class FarmObj(object):
         """Convert timestampt to datetime or return None."""
         return datetime.fromtimestamp(int(timestamp)) if timestamp else None
 
-    def _get_key(self, key: str) -> Optional[Any]:
+    def key(self, key: str) -> Optional[Any]:
         if key in self._keys:
             return self._keys[key]
         else:
             return None
 
     def _attr(self, key: str, ret_type: Type[Any]) -> Type[Any]:
-        value = FarmObj._basic_prop(self._get_key(key))
+        value = FarmObj._basic_prop(self.key(key))
         if value:
             return ret_type(value)
         else:

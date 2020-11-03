@@ -1,7 +1,8 @@
 """Create Purchase Logs."""
 
+from datetime import datetime
 from .ext.farm import Farm
-from .ext.output import alert, message
+from .ext.output import message
 from .ext.prompt import prompt, prompt_date, prompt_number
 
 
@@ -10,7 +11,6 @@ def main():
     message("Lets create a purchase log.")
     date = prompt_date("Date of purchase")
     seller = prompt("Seller")
-    invoice = prompt_number("Invoice")
     item = "test"
     items = []
     while item:
@@ -24,7 +24,9 @@ def main():
             "quantity": quantity,
             "unit_cost": unit_cost,
             "units": units,
-            "total": quantity * float(unit_cost)
+            "total": quantity * float(unit_cost),
+            'seller': seller,
+            'timestamp': datetime.combine(date, datetime.min.time()).timestamp()
         })
 
 

@@ -44,7 +44,7 @@ class Log(FarmObj):
 
     @property
     def asset(self) -> List[Asset]:
-        key = self._get_key('asset')
+        key = self.key('asset')
         if key:
             return self._get_assets(key, Asset)
         else:
@@ -52,7 +52,7 @@ class Log(FarmObj):
 
     @property
     def equipment(self) -> List[Equipment]:
-        key = self._get_key('equipment')
+        key = self.key('equipment')
         if key:
             return self._get_assets(self._keys['equipment'], Equipment)
         else:
@@ -60,7 +60,7 @@ class Log(FarmObj):
 
     @property
     def area(self) -> List[Area]:
-        key = self._get_key('area')
+        key = self.key('area')
         if key:
             return self._get_areas(key, Area)
         else:
@@ -72,7 +72,7 @@ class Log(FarmObj):
 
     @property
     def movement(self) -> List[Area]:
-        key = self._get_key('movement')['area']
+        key = self.key('movement')['area']
         if key:
             return self._get_areas(key, Area)
         return []

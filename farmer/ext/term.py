@@ -87,7 +87,7 @@ class Crop(Term):
 
     @property
     def transplant_days(self) -> Optional[int]:
-        key = self._get_key('transplant_days')
+        key = self.key('transplant_days')
         return int(key) if key else None
 
 
