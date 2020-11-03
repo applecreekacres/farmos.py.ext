@@ -2,12 +2,13 @@
 from datetime import datetime
 from typing import Dict, List, Optional
 
+from farmOS import farmOS
+
 from farmer import Area
 from farmer.ext.asset import Asset, Equipment
 from farmer.ext.farmobj import FarmObj
 from farmer.ext.others import Inventory, Quantity, Soil
 from farmer.ext.term import Category, Unit
-from farmOS import farmOS
 
 
 class Log(FarmObj):
@@ -22,7 +23,7 @@ class Log(FarmObj):
             raise KeyError('Key resource does not have value log')
 
     @property
-    def id(self) -> Optional[int]:
+    def id(self) -> Optional[int]:  # pylint: disable=invalid-name
         return self._attr('id', int)
 
     @property
@@ -31,7 +32,7 @@ class Log(FarmObj):
 
     @property
     def timestamp(self) -> Optional[datetime]:
-        return FarmObj._ts_to_dt(self._keys['timestamp'])
+        return FarmObj.timestamp_to_datetime(self._keys['timestamp'])
 
     @property
     def done(self) -> bool:
@@ -115,11 +116,11 @@ class Log(FarmObj):
 
     @property
     def created(self) -> Optional[datetime]:
-        return FarmObj._ts_to_dt(self._keys['created'])
+        return FarmObj.timestamp_to_datetime(self._keys['created'])
 
     @property
     def changed(self) -> Optional[datetime]:
-        return FarmObj._ts_to_dt(self._keys['changed'])
+        return FarmObj.timestamp_to_datetime(self._keys['changed'])
 
     @property
     def uid(self) -> Optional[int]:
@@ -160,41 +161,41 @@ class MoneyLog(LotLog):
 
     @property
     def total_price(self) -> float:
-        return FarmObj._basic_prop(self._keys['total_price'])
+        return self._attr('total_price', float)
 
     @property
     def unit_price(self) -> float:
-        return FarmObj._basic_prop(self._keys['unit_price'])
+        return self._attr('unit_price', float)
 
 
 class Input(LotLog):
 
     @property
     def material(self) -> str:
-        return FarmObj._basic_prop(self._keys['material'])
+        return self._attr('material', str)
 
     @property
     def purpose(self) -> str:
-        return FarmObj._basic_prop(self._keys['input_purpose'])
+        return self._attr('input_purpose', str)
 
     @property
     def method(self) -> str:
-        return FarmObj._basic_prop(self._keys['input_method'])
+        return self._attr('input_method', str)
 
     @property
     def source(self) -> str:
-        return FarmObj._basic_prop(self._keys['input_source'])
+        return self._attr('input_source', str)
 
     @property
     def date_purchase(self) -> Optional[datetime]:
-        return FarmObj._ts_to_dt(self._keys['date_purchase'])
+        return FarmObj.timestamp_to_datetime(self._keys['date_purchase'])
 
 
 class Seeding(LotLog):
 
     @property
     def seed_source(self) -> str:
-        return FarmObj._basic_prop(self._keys['seed_source'])
+        return self._attr('seed_source', str)
 
 
 class Transplanting(Log):
@@ -217,7 +218,7 @@ class Purchase(MoneyLog):
 
     @property
     def seller(self) -> str:
-        return FarmObj._basic_prop(self._keys['seller'])
+        return self._attr('seller', str)
 
 
 class Birth(Log):
@@ -232,11 +233,11 @@ class Sale(Log):
 
     @property
     def invoice_number(self) -> str:
-        return FarmObj._basic_prop(self._keys['invoice_number'])
+        return self._attr('invoice_number', str)
 
     @property
     def customer(self) -> str:
-        return FarmObj._basic_prop(self._get_key('customer'))
+        return self._attr('customer', str)
 
 
 class Activity(Log):
@@ -247,7 +248,7 @@ class SoilTest(Log):
 
     @property
     def soil_lab(self) -> str:
-        return FarmObj._basic_prop(self._get_key('soil_lab'))
+        return self._attr('soil_lab', str)
 
     # TODO Fix return
     @property

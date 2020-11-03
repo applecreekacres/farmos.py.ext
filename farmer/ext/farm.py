@@ -6,13 +6,15 @@ import os
 from datetime import datetime
 from typing import Dict, Iterable, Iterator, List, Type
 
+from farmOS import farmOS
+
 from farmer.ext.area import Area
 from farmer.ext.asset import Asset, Equipment, Planting
-from farmer.ext.log import (Activity, Birth, Harvest, Input, Log, Maintenance, Medical, Observation, Purchase, Sale, Seeding, SoilTest,
-                            Transplanting)
+from farmer.ext.log import (Activity, Birth, Harvest, Input, Log, Maintenance,
+                            Medical, Observation, Purchase, Sale, Seeding,
+                            SoilTest, Transplanting)
 from farmer.ext.others import Content, Quantity
 from farmer.ext.term import Crop, CropFamily, Season, Unit
-from farmOS import farmOS
 
 
 class FarmTypeMissingError(Exception):

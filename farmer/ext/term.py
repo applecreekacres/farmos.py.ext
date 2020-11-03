@@ -3,8 +3,9 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
-from farmer.ext.farmobj import FarmObj
 from farmOS import farmOS
+
+from farmer.ext.farmobj import FarmObj
 
 
 class Term(FarmObj):
@@ -43,11 +44,11 @@ class Season(Term):
 
     @property
     def start_date(self) -> Optional[datetime]:
-        return FarmObj._ts_to_dt(self._keys['date_range']['value'])
+        return FarmObj.timestamp_to_datetime(self._keys['date_range']['value'])
 
     @property
     def end_date(self) -> Optional[datetime]:
-        return FarmObj._ts_to_dt(self._keys['date_range']['value2'])
+        return FarmObj.timestamp_to_datetime(self._keys['date_range']['value2'])
 
     @property
     def duration(self) -> Optional[timedelta]:

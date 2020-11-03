@@ -1,10 +1,10 @@
 
-from farmer.ext.asset import Planting
-from farmer import planting
-from farmer.reporting import RstReporter
 from farmer import Farm
+from farmer.ext.asset import Planting
+from farmer.reporting import RstReporter
 
 YEAR = "2019"
+
 
 def main():
     farm = Farm()
@@ -15,7 +15,8 @@ def main():
             for crop in planting.crop:
                 report.heading(crop.name, 2)
                 if planting.flags:
-                    report.definition("Flags", [flag.value for flag in planting.flags])
+                    set_flags = [flag for flag in planting.flags]
+                    report.definition("Flags", str(set_flags))
                 if planting.description:
                     report.line(planting.description['value'])
 
@@ -23,6 +24,7 @@ def main():
                 report_transplants(farm, planting, report)
 
         report.heading("Compost", 1)
+
 
 def report_transplants(farm: Farm, planting: Planting, report: RstReporter):
     logs = []
@@ -53,7 +55,9 @@ def report_seedings(farm: Farm, planting: Planting, report: RstReporter):
             'Done': "\u2713" if seeding.done else '',
             'Date': date,
             'Area': ', '.join([area.name for area in seeding.movement]),
-            'Seeds': ", ".join(["{} {}".format(quantity.value, quantity.unit['name'] if quantity.unit else '') for quantity in seeding.quantity]),
+            'Seeds': ", ".join(
+                ["{} {}".format(quantity.value,
+                                quantity.unit['name'] if quantity.unit else '') for quantity in seeding.quantity]),
             # "Notes": seeding.notes if seeding.notes else ""
         })
         if seeding.notes:

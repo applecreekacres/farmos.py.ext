@@ -5,8 +5,6 @@ from typing import Dict, List, Union
 
 from farmer.reporting.report import Report
 
-# import pypandoc
-
 TITLE = "="
 
 HEADING = [
@@ -124,5 +122,3 @@ class RstReporter(Report):
             ".rst") else self.filename
         with open(path, 'w', encoding='utf-8') as rst:
             rst.write(self._doc)
-        # pypandoc.convert_file(path, "pdf",
-        #                       outputfile=path.replace(".rst", ".pdf"), )

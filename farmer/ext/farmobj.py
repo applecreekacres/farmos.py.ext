@@ -4,6 +4,8 @@ from typing import Any, Dict, List, Optional, Type
 
 from farmOS import farmOS
 
+from farmer.ext.asset import Asset
+
 
 class FarmObj(object):
 
@@ -14,39 +16,39 @@ class FarmObj(object):
         self._keys = keys
 
     def _get_terms(self, items: List[Dict], obj_class):
-        li = []
+        items = []
         for item in items:
             rets = self._farm.term.get({"tid": item['id']})
             for ret in rets['list']:
-                li.append(obj_class(self._farm, ret))
-        return li
+                items.append(obj_class(self._farm, ret))
+        return items
 
     def _get_logs(self, items: List[Dict], obj_class):
-        li = []
+        items = []
         for item in items:
             rets = self._farm.log.get(item['id'])
             for ret in rets['list']:
-                li.append(obj_class(self._farm, ret))
-        return li
+                items.append(obj_class(self._farm, ret))
+        return items
 
     def _get_areas(self, items: List[Dict], obj_class):
-        li = []
+        items = []
         for item in items:
             rets = self._farm.area.get(item['id'])
             for ret in rets['list']:
-                li.append(obj_class(self._farm, ret))
-        return li
+                items.append(obj_class(self._farm, ret))
+        return items
 
-    def _get_assets(self, items: List[Dict], obj_class):
-        li = []
+    def _get_assets(self, items: List[Dict], obj_class: Type[Asset]) -> List[Type[Asset]]:
+        items = []
         for item in items:
             rets = self._farm.asset.get(item['id'])
             if 'list' in rets:
                 for ret in rets['list']:
-                    li.append(obj_class(self._farm, ret))
+                    items.append(obj_class(self._farm, ret))
             else:
-                li.append(obj_class(self._farm, rets))
-        return li
+                items.append(obj_class(self._farm, rets))
+        return items
 
     @staticmethod
     def _basic_prop(prop: Any) -> Any:
@@ -54,9 +56,9 @@ class FarmObj(object):
         return prop if prop else None
 
     @staticmethod
-    def _ts_to_dt(ts: int) -> Optional[datetime]:
+    def timestamp_to_datetime(timestamp: int) -> Optional[datetime]:
         """Convert timestampt to datetime or return None."""
-        return datetime.fromtimestamp(int(ts)) if ts else None
+        return datetime.fromtimestamp(int(timestamp)) if timestamp else None
 
     def _get_key(self, key: str) -> Optional[Any]:
         if key in self._keys:

@@ -7,10 +7,11 @@ verify_ssl = true
 pycodestyle = "*"
 pydocstyle = "*"
 rope = "*"
-autopep8 = "*"
 pylint = "*"
 pytest = "*"
 coveralls = "*"
+isort = {extras = ["pipfile_deprecated_finder"], version = "*"}
+autopep8 = "*"
 
 [packages]
 farmos = "*"

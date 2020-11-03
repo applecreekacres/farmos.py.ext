@@ -1,12 +1,10 @@
 """Wrapper around prompt toolkit."""
 
 import logging
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 
 from prompt_toolkit import prompt as prmpt
-from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion import WordCompleter
-from prompt_toolkit.history import FileHistory
 from prompt_toolkit.validation import ValidationError, Validator
 
 
@@ -30,8 +28,8 @@ class DateValidator(Validator):
 
             # Get index of fist non numeric character.
             # We want to move the cursor here.
-            for i, c in enumerate(text):
-                if not c.isdigit():
+            for i, value in enumerate(text):
+                if not value.isdigit():
                     break
 
             raise ValidationError(message='Input is not a number',
@@ -41,8 +39,8 @@ class DateValidator(Validator):
 
             # Get index of fist non numeric character.
             # We want to move the cursor here.
-            for i, c in enumerate(text):
-                if not c.isdigit():
+            for i, value in enumerate(text):
+                if not value.isdigit():
                     break
 
             raise ValidationError(message='This input is not 8 digits long.',
@@ -68,8 +66,8 @@ class NumberValidator(Validator):
 
             # Get index of fist non numeric character.
             # We want to move the cursor here.
-            for i, c in enumerate(text):
-                if not c.isdigit():
+            for i, value in enumerate(text):
+                if not value.isdigit():
                     break
 
             raise ValidationError(message='Input is not a number',
@@ -95,8 +93,8 @@ class YesNoValidator(Validator):
 
             # Get index of fist non numeric character.
             # We want to move the cursor here.
-            for i, c in enumerate(text):
-                if not c.isdigit():
+            for i, value in enumerate(text):
+                if not value.isdigit():
                     break
 
             raise ValidationError(message='Value not y or n',
@@ -119,7 +117,7 @@ def prompt(message: str, validator=None, completion=None) -> str:
     complete = WordCompleter(completion) if completion else None
     response = prmpt("{} >".format(message), validator=validator,
                      completer=complete, search_ignore_case=True)
-    logging.info("{}: {}".format(message, response))
+    logging.info("%s: %s", message, response)
     return response
 
 
@@ -148,7 +146,7 @@ def prompt_number(message: str) -> int:
         int -- Number that user input.
     """
     num = int(prompt(message, validator=NumberValidator()))
-    logging.info("{}: {}".format(message, num))
+    logging.info("%s: %s", message, num)
     return num
 
 
