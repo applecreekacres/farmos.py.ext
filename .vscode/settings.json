@@ -2,10 +2,11 @@
     "python.linting.pycodestyleEnabled": true,
     "python.pythonPath": "C:\\Users\\lucas\\.virtualenvs\\farmer-L1tc3M0W\\Scripts\\python.exe",
     "editor.rulers": [
-        80
+        120
     ],
     "restructuredtext.confPath": "",
     "python.analysis.typeCheckingMode": "basic",
     "python.linting.pylintUseMinimalCheckers": false,
-    "python.dataScience.debugJustMyCode": false
+    "python.dataScience.debugJustMyCode": false,
+    "pythonTestExplorer.testFramework": "pytest"
 }
