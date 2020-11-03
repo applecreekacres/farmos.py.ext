@@ -137,3 +137,5 @@ farmos.cfg
 
 # Other
 */tend/*
+*.rst
+*.html

@@ -4,16 +4,16 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
 from farmer.ext.farmobj import FarmObj
-from farmOS import farmOS
+from farmOS import farmOS  # pylint: disable=wrong-import-order
 
 
 class Term(FarmObj):
 
     def __init__(self, farm: farmOS, keys: Dict):
         if 'resource' not in keys:
-            super(Term, self).__init__(farm, keys)
+            super().__init__(farm, keys)
         elif 'resource' in keys and keys['resource'] == 'taxonomy_term':
-            super(Term, self).__init__(farm, farm.term.get(
+            super().__init__(farm, farm.term.get(
                 {"tid": int(keys['id'])})['list'][0])
         else:
             raise KeyError('Key resource does not have value taxonomy_term')
@@ -43,11 +43,11 @@ class Season(Term):
 
     @property
     def start_date(self) -> Optional[datetime]:
-        return FarmObj._ts_to_dt(self._keys['date_range']['value'])
+        return FarmObj.timestamp_to_datetime(self._keys['date_range']['value'])
 
     @property
     def end_date(self) -> Optional[datetime]:
-        return FarmObj._ts_to_dt(self._keys['date_range']['value2'])
+        return FarmObj.timestamp_to_datetime(self._keys['date_range']['value2'])
 
     @property
     def duration(self) -> Optional[timedelta]:
@@ -72,10 +72,6 @@ class Crop(Term):
         return CropFamily(self._farm, key) if key else None
 
     @property
-    def images(self) -> List:
-        return FarmObj._basic_prop(self._keys['images'])
-
-    @property
     def maturity_days(self) -> Optional[int]:
         key = self._keys['maturity_days']
         return int(self._keys['maturity_days']) if key else None
@@ -86,7 +82,7 @@ class Crop(Term):
 
     @property
     def transplant_days(self) -> Optional[int]:
-        key = self._get_key('transplant_days')
+        key = self.key('transplant_days')
         return int(key) if key else None
 
 

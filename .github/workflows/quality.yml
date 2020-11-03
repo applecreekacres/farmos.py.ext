@@ -21,10 +21,5 @@ jobs:
         python-version: 3.7
     - uses: dschep/install-pipenv-action@v1
     - run: pipenv install -d
-    - name: Lints
-      uses: ricardochaves/python-lint@v1.3.0
-      with:
-        python-root-list: "farmer"
-        use-pylint: true
-        use-pycodestyle: true
-
+    - name: Pylint
+      run: pipenv run pylint farmer

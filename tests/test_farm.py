@@ -1,5 +1,5 @@
 
-from farmer.ext.farm import Farm
+from farmer import Farm
 
 def test_farm_content():
     farm = Farm()

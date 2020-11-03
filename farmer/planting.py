@@ -1,11 +1,11 @@
 """Create a new Planting."""
 
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 
 import colorama
 
-from farmer.ext.farm import Crop, CropFamily, Farm
-from farmer.ext.output import alert, debug, info, init, message
+from farmer.ext.farm import Crop, Farm
+from farmer.ext.output import alert, info, init, message
 from farmer.ext.prompt import prompt, prompt_date, prompt_number, prompt_yes_no
 
 
@@ -45,11 +45,11 @@ def create_planting(farm: Farm, crop: Crop, season: str, location: str):
 def create_seeding(farm: Farm, planting, seeding, crop: Crop):
     area = [x for x in farm.areas if x.name == seeding['location']][0]
     seed_log = farm.create_seeding(planting,
-                        area,
-                        crop,
-                        datetime.combine(seeding['date'], datetime.min.time()),
-                        seeding['seeds'],
-                        seeding['source'])
+                                   area,
+                                   crop,
+                                   datetime.combine(seeding['date'], datetime.min.time()),
+                                   seeding['seeds'],
+                                   seeding['source'])
     message("Created Seeding: {}".format(seed_log.name))
     return seed_log
 
@@ -57,17 +57,17 @@ def create_seeding(farm: Farm, planting, seeding, crop: Crop):
 def create_transplant(farm, planting, transplant):
     area = [x for x in farm.areas if x.name == transplant['location']][0]
     trans_log = farm.create_transplant(planting,
-                                  area,
-                                  datetime.combine(transplant['date'], datetime.min.time()),
-                                  done=transplant['done'])
+                                       area,
+                                       datetime.combine(transplant['date'], datetime.min.time()),
+                                       done=transplant['done'])
     message("Created Transplanting: {}".format(trans_log.name))
 
 
 def create_harvest(farm, planting, harvest):
     harvest_log = farm.create_harvest(planting,
-                               datetime.combine(harvest['date'], datetime.min.time()),
-                               None,
-                               harvest['done'])
+                                      datetime.combine(harvest['date'], datetime.min.time()),
+                                      None,
+                                      harvest['done'])
     message("Created Harvest: {}".format(harvest_log.name))
 
 
@@ -218,8 +218,8 @@ def get_crop_families(farm: Farm):
 
 def get_crops(farm: Farm, fam_ids, crop_family):
     crops = farm.crops
-    crop_names = [x.name[str(x.name).index(
-        '-')+2:] for x in crops if 'crop_family' in x._ref_objs and x._ref_objs['crop_family']['id'] == fam_ids[crop_family]]
+    crop_names = [crop.name[str(crop.name).index(
+        '-')+2:] for crop in crops if crop.key('crop_family') and crop.key('crop_family')['id'] == fam_ids[crop_family]]
     return crop_names
 
 

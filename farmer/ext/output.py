@@ -33,7 +33,7 @@ def info(msg: str):
 def alert(msg: str):
     """Create warning level log."""
     _message(msg, colorama.Fore.YELLOW)
-    logging.warn(msg)
+    logging.warning(msg)
 
 
 def error(msg: str):

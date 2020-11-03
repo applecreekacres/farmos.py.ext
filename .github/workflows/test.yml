@@ -1,0 +1,37 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2.1.4
+      with:
+        python-version: 3.7
+    - uses: dschep/install-pipenv-action@v1
+    - run: pipenv install -d
+    - run: |
+        echo "HOST=$HOST" >> farmos.cfg
+        echo "USER=$USER" >> farmos.cfg
+        echo "PASS=$PASS" >> farmos.cfg
+      env:
+        HOST: ${{ secrets.FARMOS_HOST }}
+        USER: ${{ secrets.FARMOS_USER }}
+        PASS: ${{ secrets.FARMOS_PASS }}
+    - run: pipenv run coverage run --source=. -m pytest
+    - run: pipenv run coveralls
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+

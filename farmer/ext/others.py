@@ -1,8 +1,9 @@
 
 from dataclasses import dataclass
-from farmer.ext.farmobj import FarmObj
-from typing import List, Type, Union, Dict
 from enum import Enum
+from typing import Dict, Union
+
+from farmer.ext.farmobj import FarmObj
 
 
 class Measure(Enum):
