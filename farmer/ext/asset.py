@@ -38,14 +38,6 @@ class Asset(FarmObj):
             return None
 
     @property
-    def images(self) -> List:
-        return self._attr('images', str)
-
-    @property
-    def files(self) -> List:
-        return self._attr('files', str)
-
-    @property
     def flags(self) -> List[str]:
         return self._attr('flags', str)
 

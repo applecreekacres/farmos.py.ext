@@ -1,17 +1,13 @@
 
-from farmer.ext.farmobj import FarmObj
+from farmer.ext.farmobj import FileFarmObj
 from farmer.ext.term import Season
 
 
-class Plan(FarmObj):
+class Plan(FileFarmObj):
     pass
 
 
 class CropPlan(Plan):
-
-    @property
-    def files(self):
-        pass
 
     @property
     def notes(self) -> str:

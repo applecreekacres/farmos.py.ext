@@ -4,15 +4,15 @@ from typing import Dict, List, Optional
 
 from farmOS import farmOS
 
-from farmer import Area
+from farmer.ext.area import Area
 from farmer.ext.asset import Asset, Equipment
-from farmer.ext.farmobj import FarmObj
+from farmer.ext.farmobj import FarmObj, FileFarmObj
 from farmer.ext.others import Inventory, Quantity, Soil
 from farmer.ext.term import Category, Unit
 
 
 # pylint: disable=too-many-public-methods
-class Log(FarmObj):
+class Log(FileFarmObj):
 
     def __init__(self, farm: farmOS, keys: Dict):
         if 'resource' not in keys:
@@ -84,14 +84,6 @@ class Log(FarmObj):
         return []
 
     @property
-    def images(self) -> List:
-        return self._attr('images', str)
-
-    @property
-    def files(self) -> List:
-        return self._attr('files', str)
-
-    @property
     def flags(self) -> str:
         return self._attr('flags', str)
 
@@ -138,7 +130,6 @@ class LotLog(Log):
         return self._attr('lot_number', str)
 
 
-# TODO cleanup property returns
 class MoneyLog(LotLog):
 
     @property
@@ -240,7 +231,6 @@ class SoilTest(Log):
     def soil_lab(self) -> str:
         return self._attr('soil_lab', str)
 
-    # TODO Fix return
     @property
     def soil_names(self) -> List[Soil]:
         return []

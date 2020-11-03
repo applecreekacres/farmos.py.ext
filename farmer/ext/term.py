@@ -73,10 +73,6 @@ class Crop(Term):
         return CropFamily(self._farm, key) if key else None
 
     @property
-    def images(self) -> List:
-        return self._attr('images', list)
-
-    @property
     def maturity_days(self) -> Optional[int]:
         key = self._keys['maturity_days']
         return int(self._keys['maturity_days']) if key else None

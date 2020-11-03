@@ -71,3 +71,19 @@ class FarmObj():
     @property
     def name(self) -> str:
         return FarmObj._basic_prop(self._keys['name'])
+
+    @property
+    def images(self) -> List:
+        """Image files attached to the area.
+
+        Returns:
+            List: Encoded image files.
+        """
+        return FarmObj._basic_prop(self._keys['images'])
+
+
+class FileFarmObj(FarmObj):
+
+    @property
+    def files(self) -> List:
+        return self._attr('files', str)

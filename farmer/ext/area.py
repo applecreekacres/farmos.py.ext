@@ -5,10 +5,10 @@ from __future__ import annotations
 from typing import Dict, List, Union
 
 from farmer.ext.asset import Asset
-from farmer.ext.farmobj import FarmObj
+from farmer.ext.farmobj import FileFarmObj
 
 
-class Area(FarmObj):
+class Area(FileFarmObj):
     """Area located within a Farm."""
 
     @property
@@ -29,16 +29,7 @@ class Area(FarmObj):
         Returns:
             str: Unformatted string.
         """
-        return FarmObj._basic_prop(self._keys['description'])
-
-    @property
-    def files(self) -> List:
-        """Files attached to Area.
-
-        Returns:
-            List: List of file objects.
-        """
-        return FarmObj._basic_prop(self._keys['files'])
+        return Area._basic_prop(self._keys['description'])
 
     @property
     def flags(self) -> List[str]:
@@ -47,7 +38,7 @@ class Area(FarmObj):
         Returns:
             List[str]: Assigned flags by name.
         """
-        return FarmObj._basic_prop(self._keys['flags'])
+        return Area._basic_prop(self._keys['flags'])
 
     @property
     def geofield(self) -> List[Dict]:
@@ -56,16 +47,7 @@ class Area(FarmObj):
         Returns:
             List[Dict]: Described locations.
         """
-        return FarmObj._basic_prop(self._keys['geofield'])
-
-    @property
-    def images(self) -> List:
-        """Image files attached to the area.
-
-        Returns:
-            List: Encoded image files.
-        """
-        return FarmObj._basic_prop(self._keys['images'])
+        return Area._basic_prop(self._keys['geofield'])
 
     @property
     def parent(self) -> List[Area]:
@@ -102,4 +84,4 @@ class Area(FarmObj):
         Returns:
             Dict: Vocabulary item with id and name.
         """
-        return FarmObj._basic_prop(self._keys['vocabulary'])
+        return Area._basic_prop(self._keys['vocabulary'])
