@@ -1,6 +1,7 @@
 
 from farmer import Farm
 
+
 def test_farm_content():
     farm = Farm()
     assert farm.content.api_version is not None

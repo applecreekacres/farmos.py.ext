@@ -1,5 +1,5 @@
-from farmer.ext import Measure, Quantity
 from farmer import Farm
+from farmer.ext import Measure, Quantity
 
 
 def test_quantity():
