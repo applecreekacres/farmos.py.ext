@@ -4,8 +4,6 @@ from typing import Any, Dict, List, Optional, Type
 
 from farmOS import farmOS
 
-from farmer.ext.asset import Asset
-
 
 class FarmObj(object):
 
@@ -39,7 +37,7 @@ class FarmObj(object):
                 items.append(obj_class(self._farm, ret))
         return items
 
-    def _get_assets(self, items: List[Dict], obj_class: Type[Asset]) -> List[Type[Asset]]:
+    def _get_assets(self, items: List[Dict], obj_class):
         items = []
         for item in items:
             rets = self._farm.asset.get(item['id'])
