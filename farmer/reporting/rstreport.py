@@ -117,7 +117,7 @@ class RstReporter(Report):
             self.line(row([item[key] for key in keys], col_widths))
             sep(col_widths)
 
-    def save(self, pdf=False):
+    def save(self):
         path = "{}.rst".format(self.filename) if not self.filename.endswith(
             ".rst") else self.filename
         with open(path, 'w', encoding='utf-8') as rst:

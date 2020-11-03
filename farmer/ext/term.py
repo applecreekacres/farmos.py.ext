@@ -74,7 +74,7 @@ class Crop(Term):
 
     @property
     def images(self) -> List:
-        return FarmObj._basic_prop(self._keys['images'])
+        return self._attr('images', list)
 
     @property
     def maturity_days(self) -> Optional[int]:
