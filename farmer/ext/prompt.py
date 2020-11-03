@@ -160,4 +160,4 @@ def prompt_yes_no(message: str) -> bool:
         bool -- Response from user.
     """
     response = prompt("{} [y/n]".format(message), validator=YesNoValidator())
-    return True if response in ['y', 'Y'] else False
+    return response in ['y', 'Y']
