@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Dict, List, Union
 
-from farmer.reporting import Report
+from farmer.reporting.report import Report
 
 TITLE = "="
 
