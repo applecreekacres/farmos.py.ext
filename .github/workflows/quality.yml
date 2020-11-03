@@ -27,3 +27,6 @@ jobs:
         python-root-list: "farmer"
         use-pylint: true
         use-pycodestyle: true
+        use-mypy: false
+        use-flake8: false
+        use-isort: false
