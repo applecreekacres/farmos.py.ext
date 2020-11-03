@@ -2,13 +2,12 @@
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from farmOS import farmOS
-
 from farmer.ext.area import Area
 from farmer.ext.asset import Asset, Equipment
 from farmer.ext.farmobj import FarmObj, FileFarmObj
 from farmer.ext.others import Inventory, Quantity, Soil
 from farmer.ext.term import Category, Unit
+from farmOS import farmOS  # pylint: disable=wrong-import-order
 
 
 # pylint: disable=too-many-public-methods

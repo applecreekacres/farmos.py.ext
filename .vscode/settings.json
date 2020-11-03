@@ -4,6 +4,7 @@
     "editor.rulers": [
         120
     ],
+    "editor.formatOnSave": true,
     "restructuredtext.confPath": "",
     "python.analysis.typeCheckingMode": "off",
     "python.linting.pylintUseMinimalCheckers": false,
@@ -15,5 +16,6 @@
             "source.organizeImports": true
         }
     },
-    "python.linting.pylintCategorySeverity.refactor": "Information"
+    "python.linting.pylintCategorySeverity.refactor": "Information",
+    "python.formatting.provider": "autopep8"
 }
