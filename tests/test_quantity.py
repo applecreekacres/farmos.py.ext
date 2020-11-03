@@ -1,5 +1,4 @@
-from farmer.ext.others import Measure
-from farmer import Quantity
+from farmer.ext import Measure, Quantity
 from farmer import Farm
 
 

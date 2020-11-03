@@ -1,7 +1,7 @@
 
 from datetime import datetime
-from farmer.ext.farm import Farm
-from farmer import Log
+from farmer import Farm
+from farmer.ext import Log
 
 
 def test_log_empty():
