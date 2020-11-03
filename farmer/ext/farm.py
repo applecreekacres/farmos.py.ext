@@ -26,6 +26,7 @@ def farm():
     return Farm()
 
 
+# pylint: disable=too-many-public-methods
 class Farm(farmOS):
 
     def __init__(self):

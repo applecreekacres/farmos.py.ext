@@ -20,7 +20,7 @@ class RstReporter(Report):
 
     def __init__(self, filename: str):
         self._doc = ""
-        super(RstReporter, self).__init__(filename)
+        super().__init__(filename)
         self.title(self.filename)
 
     def __enter__(self):
@@ -29,13 +29,14 @@ class RstReporter(Report):
     def __exit__(self, exc_type, exc_value, traceback):
         self.save()
 
-    def _sanitize(self, text: str):
+    @staticmethod
+    def _sanitize(text: str):
         cleaned = text.replace("<p>", "").replace(
             "</p>", "").replace("&nbsp;", "\n").replace("\n\n", "\n")
         return cleaned.replace("\n\n", "\n")
 
-    def _append(self, text):
-        self._doc += self._sanitize(text)
+    def _append(self, text: str):
+        self._doc += RstReporter._sanitize(text)
 
     def line(self, text=""):
         if text is not None:

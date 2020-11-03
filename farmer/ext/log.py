@@ -11,13 +11,14 @@ from farmer.ext.others import Inventory, Quantity, Soil
 from farmer.ext.term import Category, Unit
 
 
+# pylint: disable=too-many-public-methods
 class Log(FarmObj):
 
     def __init__(self, farm: farmOS, keys: Dict):
         if 'resource' not in keys:
-            super(Log, self).__init__(farm, keys)
+            super().__init__(farm, keys)
         elif 'resource' in keys and keys['resource'] == 'log':
-            super(Log, self).__init__(
+            super().__init__(
                 farm, farm.log.get({'id': keys['id']})['list'][0])
         else:
             raise KeyError('Key resource does not have value log')
@@ -45,26 +46,17 @@ class Log(FarmObj):
     @property
     def asset(self) -> List[Asset]:
         key = self.key('asset')
-        if key:
-            return self._get_assets(key, Asset)
-        else:
-            return []
+        return self._get_assets(key, Asset) if key else []
 
     @property
     def equipment(self) -> List[Equipment]:
         key = self.key('equipment')
-        if key:
-            return self._get_assets(self._keys['equipment'], Equipment)
-        else:
-            return []
+        return self._get_assets(key, Equipment) if key else []
 
     @property
     def area(self) -> List[Area]:
         key = self.key('area')
-        if key:
-            return self._get_areas(key, Area)
-        else:
-            return []
+        return self._get_areas(key, Area) if key else []
 
     @property
     def geofield(self) -> str:
@@ -73,9 +65,7 @@ class Log(FarmObj):
     @property
     def movement(self) -> List[Area]:
         key = self.key('movement')['area']
-        if key:
-            return self._get_areas(key, Area)
-        return []
+        return self._get_areas(key, Area) if key else []
 
     @property
     def membership(self):

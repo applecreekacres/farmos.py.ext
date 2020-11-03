@@ -13,9 +13,9 @@ class Asset(FarmObj):
 
     def __init__(self, farm, keys):
         if 'resource' not in keys:
-            super(Asset, self).__init__(farm, keys)
+            super().__init__(farm, keys)
         elif 'resource' in keys and keys['resource'] == 'farm_asset':
-            super(Asset, self).__init__(
+            super().__init__(
                 farm, farm.asset.get({'id': keys['id']})['list'][0])
 
     @property

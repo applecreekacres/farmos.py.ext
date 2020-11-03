@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Type
 from farmOS import farmOS
 
 
-class FarmObj(object):
+class FarmObj():
 
     _farm: farmOS
 
@@ -66,10 +66,7 @@ class FarmObj(object):
 
     def _attr(self, key: str, ret_type: Type[Any]) -> Type[Any]:
         value = FarmObj._basic_prop(self.key(key))
-        if value:
-            return ret_type(value)
-        else:
-            return value
+        return ret_type(value) if value else value
 
     @property
     def name(self) -> str:

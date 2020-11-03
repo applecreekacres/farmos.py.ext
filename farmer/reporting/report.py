@@ -1,6 +1,6 @@
 
 
-class Report(object):
+class Report():
 
     def __init__(self, filename: str):
         self._filename = filename

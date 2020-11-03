@@ -15,7 +15,7 @@ def main():
             for crop in planting.crop:
                 report.heading(crop.name, 2)
                 if planting.flags:
-                    set_flags = [flag for flag in planting.flags]
+                    set_flags = planting.flags
                     report.definition("Flags", str(set_flags))
                 if planting.description:
                     report.line(planting.description['value'])
