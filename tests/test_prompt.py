@@ -1,4 +1,4 @@
-from farmer.ext.prompt import DateValidator, NumberValidator, YesNoValidator, prompt, prompt_date, prompt_yes_no
+from farmer.ext.prompt import DateValidator, NumberValidator, YesNoValidator, prompt, prompt_date, prompt_number, prompt_yes_no
 from mock import patch
 from prompt_toolkit.document import Document
 from prompt_toolkit.validation import ValidationError
@@ -88,3 +88,10 @@ def test_prompt_date():
     with patch('farmer.ext.prompt.prmpt', return_value=rettext) as prmp:
         ret = prompt_date("Date")
         assert ret == rettext
+
+
+def test_prompt_number():
+    retnum = 5
+    with patch('farmer.ext.prompt.prmpt', return_value=retnum) as prmp:
+        ret = prompt_number("Number")
+        assert ret == retnum
