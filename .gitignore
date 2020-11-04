@@ -139,3 +139,4 @@ farmos.cfg
 */tend/*
 *.rst
 *.html
+cov.xml
