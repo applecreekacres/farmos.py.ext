@@ -6,7 +6,7 @@ import colorama
 
 from farmer.ext.farm import Crop, Farm
 from farmer.ext.output import alert, info, init, message
-from farmer.ext.prompt import prompt, prompt_date, prompt_number, prompt_yes_no
+from farmer.ext.prompt import prompt, prompt_date, prompt_number, prompt_option, prompt_yes_no
 
 
 def main():
@@ -33,7 +33,7 @@ def main():
 
 def determine_season(farm: Farm):
     seasons = [x.name for x in farm.seasons]
-    return prompt("Season:", completion=seasons)
+    return prompt_option("Season:", seasons)
 
 
 def create_planting(farm: Farm, crop: Crop, season: str, location: str):
@@ -133,8 +133,7 @@ def schedule_transplant(crop: Crop, seed_date: datetime, farm: Farm):
             if transplant_date < datetime.now().date():
                 alert("This date occurs in the past!")
                 done = prompt_yes_no("Mark this log as Done?")
-            location = prompt("Transplant Location",
-                              completion=get_locations(farm))
+            location = prompt_option("Transplant Location", get_locations(farm))
     return {
         "date": transplant_date,
         "location": location,
@@ -144,8 +143,8 @@ def schedule_transplant(crop: Crop, seed_date: datetime, farm: Farm):
 
 def determine_crop(farm: Farm):
     families, fam_ids = get_crop_families(farm)
-    crop_family = prompt("Crop Family", completion=[x.name for x in families])
-    crop = prompt("Crop", completion=get_crops(farm, fam_ids, crop_family))
+    crop_family = prompt_option("Crop Family", [x.name for x in families])
+    crop = prompt_option("Crop", get_crops(farm, fam_ids, crop_family))
     return crop
 
 
@@ -165,7 +164,7 @@ def schedule_seeding(farm: Farm):
         alert("{} seeds needed for planting.".format(num_seeds))
     else:
         num_seeds = prompt_number("Number of Seeds")
-    seed_location = prompt("Seed Location", completion=get_locations(farm))
+    seed_location = prompt_option("Seed Location", get_locations(farm))
     seed_source = prompt("Seed Source")
     seed_lot = prompt("Seed Lot Number")
     return {
@@ -209,7 +208,7 @@ def get_locations(farm: Farm):
 
 
 def get_crop_families(farm: Farm):
-    families = farm.crop_families
+    families = list(farm.crop_families)
     fam_ids = {fam.name: fam.tid for fam in families}
     info("Crop Families: {}".format([x.name for x in families]))
     info("Crop Family IDs: {}".format(fam_ids))
@@ -217,7 +216,7 @@ def get_crop_families(farm: Farm):
 
 
 def get_crops(farm: Farm, fam_ids, crop_family):
-    crops = farm.crops
+    crops = list(farm.crops)
     crop_names = [crop.name[str(crop.name).index(
         '-')+2:] for crop in crops if crop.key('crop_family') and crop.key('crop_family')['id'] == fam_ids[crop_family]]
     return crop_names
