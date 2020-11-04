@@ -1,4 +1,4 @@
-from farmer.ext.prompt import DateValidator, NumberValidator, YesNoValidator, prompt_yes_no
+from farmer.ext.prompt import DateValidator, NumberValidator, YesNoValidator, prompt, prompt_date, prompt_yes_no
 from mock import patch
 from prompt_toolkit.document import Document
 from prompt_toolkit.validation import ValidationError
@@ -74,3 +74,17 @@ def test_datvalidator_invalid():
     for doc in docs:
         with raises(ValidationError, match='Input is not a number'):
             validator.validate(Document(doc))
+
+
+def test_prompt():
+    rettext = 'hello'
+    with patch('farmer.ext.prompt.prmpt', return_value=rettext) as prmp:
+        ret = prompt("Test")
+        assert ret == rettext
+
+
+def test_prompt_date():
+    rettext = '05062022'
+    with patch('farmer.ext.prompt.prmpt', return_value=rettext) as prmp:
+        ret = prompt_date("Date")
+        assert ret == rettext
