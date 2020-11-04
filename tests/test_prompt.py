@@ -1,3 +1,4 @@
+from datetime import datetime
 from farmer.ext.prompt import DateValidator, NumberValidator, YesNoValidator, prompt, prompt_date, prompt_number, prompt_yes_no
 from mock import patch
 from prompt_toolkit.document import Document
@@ -87,7 +88,7 @@ def test_prompt_date():
     rettext = '05062022'
     with patch('farmer.ext.prompt.prmpt', return_value=rettext) as prmp:
         ret = prompt_date("Date")
-        assert ret == rettext
+        assert ret == datetime.strptime(rettext, "%d%m%Y").date()
 
 
 def test_prompt_number():
