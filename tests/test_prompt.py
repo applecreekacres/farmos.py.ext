@@ -1,6 +1,6 @@
 from datetime import datetime
-from farmer.ext.prompt import DateValidator, NumberValidator, YesNoValidator, prompt, prompt_date, prompt_number, prompt_yes_no
-from mock import patch
+from farmer.ext.prompt import DateValidator, NumberValidator, YesNoValidator, prompt, prompt_date, prompt_number, prompt_option, prompt_yes_no
+from mock.mock import patch
 from prompt_toolkit.document import Document
 from prompt_toolkit.validation import ValidationError
 from pytest import raises
@@ -96,3 +96,22 @@ def test_prompt_number():
     with patch('farmer.ext.prompt.prmpt', return_value=retnum) as prmp:
         ret = prompt_number("Number")
         assert ret == retnum
+
+
+def test_prompt_yes_no():
+    ret = 'y'
+    with patch('farmer.ext.prompt.prmpt', return_value=ret) as prmp:
+        rets = prompt_yes_no("Opt")
+        assert rets
+
+    ret = 'n'
+    with patch('farmer.ext.prompt.prmpt', return_value=rets) as prmp:
+        rets = prompt_yes_no("Opt")
+        assert not rets
+
+
+def test_prompt_options():
+    with patch('farmer.ext.prompt.prmpt', return_value='a'):
+        with patch("farmer.ext.prompt.Validator"):
+            items = ['a', 'b']
+            assert prompt_option("Opt", items) == 'a'
