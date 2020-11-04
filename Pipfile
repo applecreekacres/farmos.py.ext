@@ -12,6 +12,7 @@ pytest = "*"
 coveralls = "*"
 isort = {extras = ["pipfile_deprecated_finder"], version = "*"}
 autopep8 = "*"
+mock = "*"
 
 [packages]
 farmos = "*"
