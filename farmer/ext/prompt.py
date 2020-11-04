@@ -2,6 +2,7 @@
 
 import logging
 from datetime import date, datetime
+from typing import List
 
 from prompt_toolkit import prompt as prmpt
 from prompt_toolkit.completion import WordCompleter
@@ -101,7 +102,7 @@ class YesNoValidator(Validator):
                                   cursor_position=i)
 
 
-def prompt(message: str, validator=None, completion=None) -> str:
+def prompt(message: str, validator=None, completion=None, default="") -> str:
     """Request user for input.
 
     Arguments:
@@ -116,12 +117,12 @@ def prompt(message: str, validator=None, completion=None) -> str:
     """
     complete = WordCompleter(completion) if completion else None
     response = prmpt("{} >".format(message), validator=validator,
-                     completer=complete, search_ignore_case=True)
+                     completer=complete, search_ignore_case=True, default=default)
     logging.info("%s: %s", message, response)
     return response
 
 
-def prompt_date(message: str) -> date:
+def prompt_date(message: str, default=None) -> date:
     """Request date from user.
 
     Arguments:
@@ -130,8 +131,9 @@ def prompt_date(message: str) -> date:
     Returns:
         datetime -- Date that user input.
     """
-    response = prompt("{} [DDMMYYYY]".format(
-        message), validator=DateValidator())
+    if not default:
+        default = datetime.now().date().strftime("%d%m%Y")
+    response = prompt("{} [DDMMYYYY]".format(message), validator=DateValidator(), default=default)
     form_date = datetime.strptime(response, "%d%m%Y").date()
     return form_date
 
@@ -161,3 +163,23 @@ def prompt_yes_no(message: str) -> bool:
     """
     response = prompt("{} [y/n]".format(message), validator=YesNoValidator())
     return response in ['y', 'Y']
+
+
+def prompt_option(message: str, options: List[str]) -> str:
+    """Request a choice from a list of options
+
+    Args:
+        message (str): message to user.
+        options (List): Options to provide in completion and validation
+
+    Returns:
+        str: [description]
+    """
+    def is_in_list(text):
+        return text in options
+
+    validator = Validator.from_callable(is_in_list,
+                                        error_message="Input is not in list of options",
+                                        move_cursor_to_end=True)
+    response = prompt(message, completion=options, validator=validator)
+    return response
