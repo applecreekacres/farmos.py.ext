@@ -1,4 +1,4 @@
-from farmer.ext.prompt import NumberValidator, YesNoValidator, prompt_yes_no
+from farmer.ext.prompt import DateValidator, NumberValidator, YesNoValidator, prompt_yes_no
 from mock import patch
 from prompt_toolkit.document import Document
 from prompt_toolkit.validation import ValidationError
@@ -54,3 +54,23 @@ def test_numbervalidator_invalid():
         doc = Document(str(num))
         with raises(ValidationError):
             validator.validate(doc)
+
+
+def test_datevalidator_valid():
+    validator = DateValidator()
+    doc = Document("04052015")
+    validator.validate(doc)
+
+
+def test_datvalidator_invalid():
+    validator = DateValidator()
+
+    docs = ['345456', '345345445', '1']
+    for doc in docs:
+        with raises(ValidationError, match='This input is not 8 digits long.'):
+            validator.validate(Document(doc))
+
+    docs = ['345h', 'a', 'dfsfgsdfg']
+    for doc in docs:
+        with raises(ValidationError, match='Input is not a number'):
+            validator.validate(Document(doc))
