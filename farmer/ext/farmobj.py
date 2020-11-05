@@ -1,52 +1,23 @@
 
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Type
+from __future__ import annotations
 
-from farmOS import farmOS
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Type, TYPE_CHECKING
+if TYPE_CHECKING:
+    from farmer.ext.farm import Farm
 
 
 class FarmObj():
 
-    _farm: farmOS
+    _farm = None
 
-    def __init__(self, farm: farmOS, keys: Dict = None):
+    def __init__(self, farm: Farm, keys: Dict = None):
         self._farm = farm
         self._keys = keys
 
-    def _get_terms(self, items: List[Dict], obj_class):
-        items = []
-        for item in items:
-            rets = self._farm.term.get({"tid": item['id']})
-            for ret in rets['list']:
-                items.append(obj_class(self._farm, ret))
-        return items
-
-    def _get_logs(self, items: List[Dict], obj_class):
-        items = []
-        for item in items:
-            rets = self._farm.log.get(item['id'])
-            for ret in rets['list']:
-                items.append(obj_class(self._farm, ret))
-        return items
-
-    def _get_areas(self, items: List[Dict], obj_class):
-        items = []
-        for item in items:
-            rets = self._farm.area.get(item['id'])
-            for ret in rets['list']:
-                items.append(obj_class(self._farm, ret))
-        return items
-
-    def _get_assets(self, items: List[Dict], obj_class):
-        items = []
-        for item in items:
-            rets = self._farm.asset.get(item['id'])
-            if 'list' in rets:
-                for ret in rets['list']:
-                    items.append(obj_class(self._farm, ret))
-            else:
-                items.append(obj_class(self._farm, rets))
-        return items
+    @property
+    def farm(self):
+        return self._farm
 
     @staticmethod
     def _basic_prop(prop: Any) -> Any:

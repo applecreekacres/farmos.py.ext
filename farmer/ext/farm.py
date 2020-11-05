@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 from datetime import datetime
-from typing import Dict, Iterable, Iterator, List, Type
+from typing import Dict, Iterable, Iterator, List, Type, Union
 
 from farmer.ext.area import Area
 from farmer.ext.asset import Asset, Equipment, Planting
@@ -12,7 +12,7 @@ from farmer.ext.log import (Activity, Birth, Harvest, Input, Log, Maintenance,
                             Medical, Observation, Purchase, Sale, Seeding,
                             SoilTest, Transplanting)
 from farmer.ext.others import Content, Quantity
-from farmer.ext.term import Crop, CropFamily, Season, Unit
+from farmer.ext.term import Crop, CropFamily, Season, Term, Unit
 from farmOS import farmOS  # pylint: disable=wrong-import-order
 
 
@@ -53,13 +53,56 @@ class Farm(farmOS):
         else:
             raise Exception('farmos.cfg not found.')
 
-    def _get_assets(self, obj_class: Type[Asset], filters: Dict = None) -> Iterator[Type[Asset]]:
-        for asset in self.asset.get(filters)['list']:
-            yield obj_class(self, asset)
+    def assets(self,
+               filters: Union[Dict, List[Dict], int, str] = None,
+               asset_class: Type[Asset] = Asset) -> Iterator[Type[Asset]]:
+        if isinstance(filters, list):
+            for filt in filters:
+                for asset in self.asset.get(filt)['list']:
+                    yield asset_class(self, keys=asset)
+        else:
+            for asset in self.asset.get(filters)['list']:
+                yield asset_class(self, keys=asset)
 
-    def _get_logs(self, obj_class: Type[Log], filters: Dict = None) -> Iterator[Type[Log]]:
-        for log in self.log.get(filters)['list']:
-            yield obj_class(self, log)
+    # def _get_assets(self, items: List[Dict], obj_class):
+    #     retitems = []
+    #     for item in items:
+    #         rets = self.asset.get(item['id'])
+    #         if 'list' in rets:
+    #             self.extract(rets, obj_class)
+    #         else:
+    #             retitems.append(obj_class(self, rets))
+    #     return retitems
+
+    def logs(self,
+             filters: Union[Dict, List[Dict], int, str] = None,
+             log_class: Type[Log] = Log) -> Iterator[Type[Log]]:
+        if isinstance(filters, list):
+            for filt in filters:
+                for log in self.log.get(filt):
+                    yield log_class(self, keys=log)
+        else:
+            for log in self.log.get(filters):
+                yield log_class(self, keys=log)
+
+    def terms(self, filters: Union[str, List[Dict], Dict] = None,
+              term_class: Type[Term] = Term) -> Iterator[Type[Term]]:
+        if isinstance(filters, list):
+            for item in filters:
+                for term in self.term.get({"tid": item['id']})['list']:
+                    yield term_class(self, keys=term)
+        else:
+            rets = self.term.get(filters)
+            yield term_class(self, keys=rets)
+
+    def areas(self, filters: Union[Dict, List[Dict], int, str] = None) -> Iterator[Area]:
+        if isinstance(filters, list):
+            for filt in filters:
+                for area in self.area.get(filt)['list']:
+                    yield Area(self, keys=area)
+        else:
+            for area in self.area.get(filters)['list']:
+                yield Area(self, keys=area)
 
     def _create_log(self, name: str, date: datetime, category: str, fields: Dict, done=False):
         data = {
@@ -85,15 +128,6 @@ class Farm(farmOS):
         for season in self.term.get("farm_season")['list']:
             yield Season(self, season)
 
-    def assets(self, filters: Dict = None) -> Iterable[Asset]:
-        for asset in self.asset.get(filters)['list']:
-            yield Asset(self, keys=asset)
-
-    @property
-    def areas(self) -> Iterable[Area]:
-        for area in self.area.get()['list']:
-            yield Area(self, keys=area)
-
     @property
     def crop_families(self) -> Iterable[CropFamily]:
         for fam in self.term.get("farm_crop_families")['list']:
@@ -109,14 +143,14 @@ class Farm(farmOS):
             filters = {'type': 'equipment'}
         else:
             filters.update({'type': 'equipment'})
-        return self._get_assets(Equipment, filters)
+        return self.assets(filters, Equipment)
 
     def plantings(self, filters: Dict = None) -> Iterable[Planting]:
         if not filters:
             filters = {'type': 'planting'}
         else:
             filters.update({'type': 'planting'})
-        return self._get_assets(Planting, filters)
+        return self.assets(filters, Planting)
 
     @property
     def units(self) -> Iterable[Unit]:
@@ -129,7 +163,7 @@ class Farm(farmOS):
                 filters = {'type': 'farm_harvest'}
             else:
                 filters.update({'type': 'farm_harvest'})
-            return self._get_logs(Harvest, filters)
+            return self.logs(filters, Harvest)
         else:
             raise FarmTypeMissingError("Harvest logs not supported.")
 
@@ -139,7 +173,7 @@ class Farm(farmOS):
                 filters = {'type': 'farm_seeding'}
             else:
                 filters.update({'type': 'farm_seeding'})
-            return self._get_logs(Seeding, filters)
+            return self.logs(filters, Seeding)
         else:
             raise FarmTypeMissingError("Seeding logs not supported.")
 
@@ -149,7 +183,7 @@ class Farm(farmOS):
                 filters = {'type': 'farm_transplanting'}
             else:
                 filters.update({'type': 'farm_transplanting'})
-            return self._get_logs(Transplanting, filters)
+            return self.logs(filters, Transplanting)
         else:
             raise FarmTypeMissingError("Transplanting logs not supported.")
 
@@ -159,7 +193,7 @@ class Farm(farmOS):
                 filters = {'type': 'farm_observation'}
             else:
                 filters.update({'type': 'farm_observation'})
-            return self._get_logs(Observation, filters)
+            return self.logs(filters, Observation)
         else:
             raise FarmTypeMissingError("Observation logs not supported.")
 
@@ -169,7 +203,7 @@ class Farm(farmOS):
                 filters = {'type': 'farm_maintenance'}
             else:
                 filters.update({'type': 'farm_maintenance'})
-            return self._get_logs(Maintenance, filters)
+            return self.logs(filters, Maintenance)
         else:
             raise FarmTypeMissingError("Maintenance logs not supported.")
 
@@ -179,7 +213,7 @@ class Farm(farmOS):
                 filters = {'type': 'farm_purchase'}
             else:
                 filters.update({'type': 'farm_purchase'})
-            return self._get_logs(Purchase, filters)
+            return self.logs(filters, Purchase)
         else:
             raise FarmTypeMissingError("Purchase logs not supported.")
 
@@ -189,7 +223,7 @@ class Farm(farmOS):
                 filters = {'type': 'farm_sale'}
             else:
                 filters.update({'type': 'farm_sale'})
-            return self._get_logs(Sale, filters)
+            return self.logs(filters, Sale)
         else:
             raise FarmTypeMissingError("Sale logs not supported.")
 
@@ -199,7 +233,7 @@ class Farm(farmOS):
                 filters = {'type': 'farm_birth'}
             else:
                 filters.update({'type': 'farm_birth'})
-            return self._get_logs(Birth, filters)
+            return self.logs(filters, Birth)
         else:
             raise FarmTypeMissingError("Birth logs not supported.")
 
@@ -209,7 +243,7 @@ class Farm(farmOS):
                 filters = {'type': 'farm_input'}
             else:
                 filters.update({'type': 'farm_input'})
-            return self._get_logs(Input, filters)
+            return self.logs(filters, Input)
         else:
             raise FarmTypeMissingError("Input logs not supported.")
 
@@ -219,7 +253,7 @@ class Farm(farmOS):
                 filters = {'type': 'farm_soil_test'}
             else:
                 filters.update({'type': 'farm_soil_test'})
-            return self._get_logs(SoilTest, filters)
+            return self.logs(filters, SoilTest)
         else:
             raise FarmTypeMissingError("Soil test logs not supported.")
 
@@ -229,7 +263,7 @@ class Farm(farmOS):
                 filters = {'type': 'farm_activity'}
             else:
                 filters.update({'type': 'farm_activity'})
-            return self._get_logs(Activity, filters)
+            return self.logs(filters, Activity)
         else:
             raise FarmTypeMissingError("Activity logs not supported.")
 
@@ -239,7 +273,7 @@ class Farm(farmOS):
                 filters = {'type': 'farm_medical'}
             else:
                 filters.update({'type': 'farm_medical'})
-            return self._get_logs(Medical, filters)
+            return self.logs(filters, Medical)
         else:
             raise FarmTypeMissingError("Medical logs are not supported.")
 

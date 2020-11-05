@@ -45,17 +45,17 @@ class Log(FileFarmObj):
     @property
     def asset(self) -> List[Asset]:
         key = self.key('asset')
-        return self._get_assets(key, Asset) if key else []
+        return self.farm.assets(key, Asset) if key else []
 
     @property
     def equipment(self) -> List[Equipment]:
         key = self.key('equipment')
-        return self._get_assets(key, Equipment) if key else []
+        return self.farm.assets(key, Equipment) if key else []
 
     @property
     def area(self) -> List[Area]:
         key = self.key('area')
-        return self._get_areas(key, Area) if key else []
+        return self.farm.areas(key, Area) if key else []
 
     @property
     def geofield(self) -> str:
@@ -64,7 +64,7 @@ class Log(FileFarmObj):
     @property
     def movement(self) -> List[Area]:
         key = self.key('movement')['area']
-        return self._get_areas(key, Area) if key else []
+        return self.farm.areas(key, Area) if key else []
 
     @property
     def membership(self):

@@ -62,7 +62,7 @@ class Planting(Asset):
 
     @property
     def crop(self) -> List[Crop]:
-        return self._get_terms(self._keys['crop'], Crop)
+        return self.terms(self._keys['crop'], Crop)
 
     @property
     def season(self):

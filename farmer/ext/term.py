@@ -32,7 +32,7 @@ class Term(FarmObj):
 
     @property
     def parent(self) -> List[Term]:
-        return self._get_terms(self._keys['parent'], Term)
+        return self.terms(self._keys['parent'], Term)
 
     @property
     def vocabulary(self) -> Optional[Dict]:
@@ -64,7 +64,7 @@ class Crop(Term):
 
     @property
     def companions(self) -> List[Crop]:
-        return self._get_terms(self._keys['companions'], Crop)
+        return self.farm.terms(self._keys['companions'], Crop)
 
     @property
     def crop_family(self) -> Optional[CropFamily]:
@@ -78,7 +78,7 @@ class Crop(Term):
 
     @property
     def parents_all(self) -> List[Crop]:
-        return self._get_terms(self._keys['parents_all'], Crop)
+        return self.farm.terms(self._keys['parents_all'], Crop)
 
     @property
     def transplant_days(self) -> Optional[int]:

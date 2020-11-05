@@ -18,7 +18,7 @@ class Area(FileFarmObj):
         Returns:
             Union[List[Asset], None]: [description]
         """
-        return self._get_assets(self._keys['assets'], Asset)
+        return self.farm.assets(self._keys['assets'])
 
     @property
     def description(self) -> str:
@@ -56,7 +56,7 @@ class Area(FileFarmObj):
         Returns:
             List[Area]: Generally a single item but stored as a list.
         """
-        return self._get_areas(self._keys['parent'], Area)
+        return self.farm.areas(self._keys['parent'])
 
     @property
     def parents_all(self) -> List[Area]:
@@ -65,7 +65,7 @@ class Area(FileFarmObj):
         Returns:
             List[Area]: List of parents.
         """
-        return self._get_areas(self._keys['parents_all'], Area)
+        return self.farm.areas(self._keys['parents_all'], Area)
 
     @property
     def tid(self) -> Union[int, None]:
