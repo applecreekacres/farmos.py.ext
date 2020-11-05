@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from farmer import Farm
-from farmer.ext import Log
+from farmer.ext.log import Log
 
 
 def test_log_empty():
