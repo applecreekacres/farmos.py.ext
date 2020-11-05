@@ -27,7 +27,7 @@ class Term(FarmObj):
 
     @property
     def description(self) -> str:
-        return FarmObj._basic_prop(self._keys['description'])
+        return self.key('description')
 
     @property
     def parent(self) -> List[Term]:
@@ -35,7 +35,7 @@ class Term(FarmObj):
 
     @property
     def vocabulary(self) -> Optional[Dict]:
-        return FarmObj._basic_prop(self._keys['vocabulary'])
+        return self.key('vocabulary')
 
 
 class Season(Term):

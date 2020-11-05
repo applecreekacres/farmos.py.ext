@@ -41,7 +41,7 @@ class FarmObj():
 
     @property
     def name(self) -> str:
-        return FarmObj._basic_prop(self._keys['name'])
+        return self.key('name')
 
     @property
     def images(self) -> List:
@@ -50,7 +50,7 @@ class FarmObj():
         Returns:
             List: Encoded image files.
         """
-        return FarmObj._basic_prop(self._keys['images'])
+        return self.key('images')
 
 
 class FileFarmObj(FarmObj):
