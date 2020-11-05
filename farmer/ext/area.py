@@ -29,7 +29,7 @@ class Area(FileFarmObj):
         Returns:
             str: Unformatted string.
         """
-        return Area._basic_prop(self._keys['description'])
+        return self.key('description')
 
     @property
     def flags(self) -> List[str]:
@@ -38,7 +38,7 @@ class Area(FileFarmObj):
         Returns:
             List[str]: Assigned flags by name.
         """
-        return Area._basic_prop(self._keys['flags'])
+        return self.key('flags')
 
     @property
     def geofield(self) -> List[Dict]:
@@ -47,7 +47,7 @@ class Area(FileFarmObj):
         Returns:
             List[Dict]: Described locations.
         """
-        return Area._basic_prop(self._keys['geofield'])
+        return self.key('geofield')
 
     @property
     def parent(self) -> List[Area]:
@@ -56,7 +56,7 @@ class Area(FileFarmObj):
         Returns:
             List[Area]: Generally a single item but stored as a list.
         """
-        return self.farm.areas(self._keys['parent'])
+        return self.farm.areas(self.key('parent'))
 
     @property
     def parents_all(self) -> List[Area]:
@@ -65,7 +65,7 @@ class Area(FileFarmObj):
         Returns:
             List[Area]: List of parents.
         """
-        return self.farm.areas(self._keys['parents_all'], Area)
+        return self.farm.areas(self.key('parents_all'))
 
     @property
     def tid(self) -> Union[int, None]:
@@ -75,7 +75,7 @@ class Area(FileFarmObj):
             Union[int, None]: Unique ID, none if there is no id but this should
             not occur.
         """
-        return int(self._keys['tid']) if self._keys['tid'] else None
+        return self._attr('tid', int)
 
     @property
     def vocabulary(self) -> Dict:
@@ -84,4 +84,4 @@ class Area(FileFarmObj):
         Returns:
             Dict: Vocabulary item with id and name.
         """
-        return Area._basic_prop(self._keys['vocabulary'])
+        return self.key('vocabulary')
