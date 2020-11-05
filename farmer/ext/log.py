@@ -1,4 +1,6 @@
 
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Dict, List, Optional
 
@@ -7,13 +9,12 @@ from farmer.ext.asset import Asset, Equipment
 from farmer.ext.farmobj import FarmObj, FileFarmObj
 from farmer.ext.others import Inventory, Quantity, Soil
 from farmer.ext.term import Category, Unit
-from farmOS import farmOS  # pylint: disable=wrong-import-order
 
 
 # pylint: disable=too-many-public-methods
 class Log(FileFarmObj):
 
-    def __init__(self, farm: farmOS, keys: Dict):
+    def __init__(self, farm, keys: Dict):
         if 'resource' not in keys:
             super().__init__(farm, keys)
         elif 'resource' in keys and keys['resource'] == 'log':

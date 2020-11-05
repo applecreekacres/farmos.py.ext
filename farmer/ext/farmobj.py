@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Type, TYPE_CHECKING
 if TYPE_CHECKING:
-    from farmer.ext.farm import Farm
+    from farmer.ext.farm import Farm  # pylint: disable=cyclic-import
 
 
 class FarmObj():

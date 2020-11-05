@@ -62,7 +62,7 @@ class Planting(Asset):
 
     @property
     def crop(self) -> List[Crop]:
-        return self.terms(self._keys['crop'], Crop)
+        return self.farm.terms(self._keys['crop'], Crop)
 
     @property
     def season(self):
@@ -93,7 +93,7 @@ class Animal(Asset):
 
     @property
     def parent(self) -> List[Animal]:
-        return self._get_assets(self._keys['parent'], Animal)
+        return self.farm.assets(self.key('parent'), Animal)
 
     @property
     def birth_date(self) -> Union[datetime, None]:
