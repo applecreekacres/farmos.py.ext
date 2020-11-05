@@ -57,4 +57,4 @@ class FileFarmObj(FarmObj):
 
     @property
     def files(self) -> List:
-        return self.attr('files', str)
+        return self.attr('files', list)
