@@ -1,4 +1,5 @@
 from datetime import datetime
+
 import mock
 from farmer import Farm
 from farmer.ext.farmobj import FarmObj, FileFarmObj
@@ -23,6 +24,7 @@ def test_farmobj_not_empty(mock_farm):
     assert obj.name == 'test'
     assert len(obj.images) == 2
     assert obj.farm == mock_farm
+
 
 @mock.patch("farmer.Farm")
 def test_filefarmobj_empty(mock_farm):

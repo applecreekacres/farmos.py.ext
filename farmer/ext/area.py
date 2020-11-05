@@ -18,7 +18,7 @@ class Area(FileFarmObj):
         Returns:
             Union[List[Asset], None]: [description]
         """
-        return self.farm.assets(self._keys['assets'])
+        return self.farm.assets(self.key('assets'))
 
     @property
     def description(self) -> str:
