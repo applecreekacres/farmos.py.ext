@@ -75,7 +75,7 @@ class Area(FileFarmObj):
             Union[int, None]: Unique ID, none if there is no id but this should
             not occur.
         """
-        return self._attr('tid', int)
+        return self.attr('tid', int)
 
     @property
     def vocabulary(self) -> Dict:

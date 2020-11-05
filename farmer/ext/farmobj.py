@@ -35,7 +35,7 @@ class FarmObj():
         else:
             return None
 
-    def _attr(self, key: str, ret_type: Type[Any]) -> Type[Any]:
+    def attr(self, key: str, ret_type: Type[Any]) -> Type[Any]:
         value = FarmObj._basic_prop(self.key(key))
         return ret_type(value) if value else value
 
@@ -57,4 +57,4 @@ class FileFarmObj(FarmObj):
 
     @property
     def files(self) -> List:
-        return self._attr('files', str)
+        return self.attr('files', str)
