@@ -13,8 +13,7 @@ class Term(FarmObj):
         if 'resource' not in keys:
             super().__init__(farm, keys)
         elif 'resource' in keys and keys['resource'] == 'taxonomy_term':
-            super().__init__(farm, farm.term.get(
-                {"tid": int(keys['id'])})['list'][0])
+            super().__init__(farm, farm.term.get({"tid": int(keys['id'])})['list'][0])
         else:
             raise KeyError('Key resource does not have value taxonomy_term')
 
