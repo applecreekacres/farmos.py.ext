@@ -32,7 +32,7 @@ class Term(FarmObj):
 
     @property
     def parent(self) -> List[Term]:
-        return self.terms(self._keys['parent'], Term)
+        return self.farm.terms(self._keys['parent'], Term)
 
     @property
     def vocabulary(self) -> Optional[Dict]:
