@@ -4,17 +4,49 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "test",
+            "label": "unit test",
             "type": "shell",
             "command": "pipenv",
             "args": [
                 "run",
-                "pytest"
+                "pytest",
+                "--cov-report",
+                "xml:cov.xml",
+                "--cov",
+                "farmer",
+                "tests/unit"
             ],
             "group": {
                 "kind": "test",
                 "isDefault": true
             }
-        }
+        },
+        {
+            "label": "integration test",
+            "type": "shell",
+            "command": "pipenv",
+            "args": [
+                "run",
+                "pytest",
+                "--cov-report",
+                "xml:cov.xml",
+                "--cov",
+                "farmer",
+                "tests/integration"
+            ]
+        },
+        {
+            "label": "all test",
+            "type": "shell",
+            "command": "pipenv",
+            "args": [
+                "run",
+                "pytest",
+                "--cov-report",
+                "xml:cov.xml",
+                "--cov",
+                "farmer"
+            ]
+        },
     ]
 }
