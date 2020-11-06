@@ -42,7 +42,6 @@ jobs:
         python-version: 3.7
     - uses: dschep/install-pipenv-action@v1
     - run: |
-        pipenv shell
         pipenv install -d
         echo "CODEQL_PYTHON=$(which python)" >> $GITHUB_ENV
       env:
