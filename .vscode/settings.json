@@ -1,6 +1,6 @@
 {
     "python.linting.pycodestyleEnabled": true,
-    "python.pythonPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+    "python.pythonPath": ".venv\\Scripts\\python.exe",
     "editor.rulers": [
         120
     ],
