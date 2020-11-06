@@ -60,31 +60,31 @@ class Content(FarmObj):
 
     @property
     def api_version(self) -> Union[str, None]:
-        return FarmObj._basic_prop(self._keys['api_version'])
+        return self.key('api_version')
 
     @property
     def system_of_measurement(self) -> Union[str, None]:
-        return FarmObj._basic_prop(self._keys['system_of_measurement'])
+        return self.key('system_of_measurement')
 
     @property
     def metrics(self) -> Dict:
-        return FarmObj._basic_prop(self._keys['metrics'])
+        return self.key('metrics')
 
     @property
     def mapbox_api_key(self) -> str:
-        return FarmObj._basic_prop(self._keys['mapbox_api_key'])
+        return self.key('mapbox_api_key')
 
     @property
     def languages(self) -> Dict:
-        return FarmObj._basic_prop(self._keys['languages'])
+        return self.key('languages')
 
     @property
     def google_maps_api_key(self) -> str:
-        return FarmObj._basic_prop(self._keys['google_maps_api_key'])
+        return self.key('google_maps_api_key')
 
     @property
     def resources(self) -> Dict:
-        return FarmObj._basic_prop(self._keys['resources'])
+        return self.key('resources')
 
 
 class Soil(FarmObj):

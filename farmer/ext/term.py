@@ -13,8 +13,7 @@ class Term(FarmObj):
         if 'resource' not in keys:
             super().__init__(farm, keys)
         elif 'resource' in keys and keys['resource'] == 'taxonomy_term':
-            super().__init__(farm, farm.term.get(
-                {"tid": int(keys['id'])})['list'][0])
+            super().__init__(farm, farm.term.get({"tid": int(keys['id'])})['list'][0])
         else:
             raise KeyError('Key resource does not have value taxonomy_term')
 
@@ -28,15 +27,15 @@ class Term(FarmObj):
 
     @property
     def description(self) -> str:
-        return FarmObj._basic_prop(self._keys['description'])
+        return self.key('description')
 
     @property
     def parent(self) -> List[Term]:
-        return self._get_terms(self._keys['parent'], Term)
+        return self.farm.terms(self._keys['parent'], Term)
 
     @property
     def vocabulary(self) -> Optional[Dict]:
-        return FarmObj._basic_prop(self._keys['vocabulary'])
+        return self.key('vocabulary')
 
 
 class Season(Term):
@@ -64,7 +63,7 @@ class Crop(Term):
 
     @property
     def companions(self) -> List[Crop]:
-        return self._get_terms(self._keys['companions'], Crop)
+        return self.farm.terms(self._keys['companions'], Crop)
 
     @property
     def crop_family(self) -> Optional[CropFamily]:
@@ -78,7 +77,7 @@ class Crop(Term):
 
     @property
     def parents_all(self) -> List[Crop]:
-        return self._get_terms(self._keys['parents_all'], Crop)
+        return self.farm.terms(self._keys['parents_all'], Crop)
 
     @property
     def transplant_days(self) -> Optional[int]:

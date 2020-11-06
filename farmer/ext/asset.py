@@ -20,15 +20,15 @@ class Asset(FarmObj):
 
     @property
     def id(self) -> str:  # pylint: disable=invalid-name
-        return self._attr('id', str)
+        return self.attr('id', str)
 
     @property
     def type(self) -> str:
-        return self._attr('type', str)
+        return self.attr('type', str)
 
     @property
     def description(self) -> Dict:
-        return self._attr('description', str)
+        return self.attr('description', str)
 
     @property
     def archived(self) -> Union[datetime, None]:
@@ -39,7 +39,7 @@ class Asset(FarmObj):
 
     @property
     def flags(self) -> List[str]:
-        return self._attr('flags', str)
+        return self.attr('flags', str)
 
     @property
     def created(self) -> Union[datetime, None]:
@@ -55,14 +55,14 @@ class Asset(FarmObj):
 
     @property
     def data(self) -> str:
-        return self._attr('data', str)
+        return self.attr('data', str)
 
 
 class Planting(Asset):
 
     @property
     def crop(self) -> List[Crop]:
-        return self._get_terms(self._keys['crop'], Crop)
+        return self.farm.terms(self._keys['crop'], Crop)
 
     @property
     def season(self):
@@ -73,27 +73,27 @@ class Animal(Asset):
 
     @property
     def animal_type(self) -> str:
-        return self._attr('animal_type', str)
+        return self.attr('animal_type', str)
 
     @property
     def nicknames(self) -> List[str]:
-        return self._attr('animal_nicknames', list)
+        return self.attr('animal_nicknames', list)
 
     @property
     def castrated(self) -> bool:
-        return self._attr('animal_castrated', bool)
+        return self.attr('animal_castrated', bool)
 
     @property
     def sex(self) -> str:
-        return self._attr('animal_sex', str)
+        return self.attr('animal_sex', str)
 
     @property
     def tag(self):
-        return self._attr('tag', str)
+        return self.attr('tag', str)
 
     @property
     def parent(self) -> List[Animal]:
-        return self._get_assets(self._keys['parent'], Animal)
+        return self.farm.assets(self.key('parent'), Animal)
 
     @property
     def birth_date(self) -> Union[datetime, None]:
@@ -104,15 +104,15 @@ class Equipment(Asset):
 
     @property
     def manufacturer(self) -> str:
-        return self._attr('manufacturer', str)
+        return self.attr('manufacturer', str)
 
     @property
     def model(self) -> str:
-        return self._attr('model', str)
+        return self.attr('model', str)
 
     @property
     def serial_number(self) -> str:
-        return self._attr('serial_number', str)
+        return self.attr('serial_number', str)
 
 
 class Sensor(Asset):

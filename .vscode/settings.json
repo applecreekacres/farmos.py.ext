@@ -18,6 +18,7 @@
     },
     "python.linting.pylintCategorySeverity.refactor": "Information",
     "python.formatting.provider": "autopep8",
+    "coverage-gutters.showLineCoverage": true,
     "terminal.integrated.env.windows": {
         "PIPENV_VENV_IN_PROJECT": "1"
     }

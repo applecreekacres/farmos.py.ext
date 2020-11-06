@@ -1,52 +1,23 @@
 
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Type
+from __future__ import annotations
 
-from farmOS import farmOS
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Type, TYPE_CHECKING
+if TYPE_CHECKING:
+    from farmer.ext.farm import Farm  # pylint: disable=cyclic-import
 
 
 class FarmObj():
 
-    _farm: farmOS
+    _farm = None
 
-    def __init__(self, farm: farmOS, keys: Dict = None):
+    def __init__(self, farm: Farm, keys: Dict = None):
         self._farm = farm
         self._keys = keys
 
-    def _get_terms(self, items: List[Dict], obj_class):
-        items = []
-        for item in items:
-            rets = self._farm.term.get({"tid": item['id']})
-            for ret in rets['list']:
-                items.append(obj_class(self._farm, ret))
-        return items
-
-    def _get_logs(self, items: List[Dict], obj_class):
-        items = []
-        for item in items:
-            rets = self._farm.log.get(item['id'])
-            for ret in rets['list']:
-                items.append(obj_class(self._farm, ret))
-        return items
-
-    def _get_areas(self, items: List[Dict], obj_class):
-        items = []
-        for item in items:
-            rets = self._farm.area.get(item['id'])
-            for ret in rets['list']:
-                items.append(obj_class(self._farm, ret))
-        return items
-
-    def _get_assets(self, items: List[Dict], obj_class):
-        items = []
-        for item in items:
-            rets = self._farm.asset.get(item['id'])
-            if 'list' in rets:
-                for ret in rets['list']:
-                    items.append(obj_class(self._farm, ret))
-            else:
-                items.append(obj_class(self._farm, rets))
-        return items
+    @property
+    def farm(self):
+        return self._farm
 
     @staticmethod
     def _basic_prop(prop: Any) -> Any:
@@ -64,13 +35,13 @@ class FarmObj():
         else:
             return None
 
-    def _attr(self, key: str, ret_type: Type[Any]) -> Type[Any]:
+    def attr(self, key: str, ret_type: Type[Any]) -> Type[Any]:
         value = FarmObj._basic_prop(self.key(key))
         return ret_type(value) if value else value
 
     @property
     def name(self) -> str:
-        return FarmObj._basic_prop(self._keys['name'])
+        return self.key('name')
 
     @property
     def images(self) -> List:
@@ -79,11 +50,11 @@ class FarmObj():
         Returns:
             List: Encoded image files.
         """
-        return FarmObj._basic_prop(self._keys['images'])
+        return self.key('images')
 
 
 class FileFarmObj(FarmObj):
 
     @property
     def files(self) -> List:
-        return self._attr('files', str)
+        return self.attr('files', list)

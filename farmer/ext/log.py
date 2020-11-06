@@ -1,4 +1,6 @@
 
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Dict, List, Optional
 
@@ -7,13 +9,12 @@ from farmer.ext.asset import Asset, Equipment
 from farmer.ext.farmobj import FarmObj, FileFarmObj
 from farmer.ext.others import Inventory, Quantity, Soil
 from farmer.ext.term import Category, Unit
-from farmOS import farmOS  # pylint: disable=wrong-import-order
 
 
 # pylint: disable=too-many-public-methods
 class Log(FileFarmObj):
 
-    def __init__(self, farm: farmOS, keys: Dict):
+    def __init__(self, farm, keys: Dict):
         if 'resource' not in keys:
             super().__init__(farm, keys)
         elif 'resource' in keys and keys['resource'] == 'log':
@@ -24,11 +25,11 @@ class Log(FileFarmObj):
 
     @property
     def id(self) -> Optional[int]:  # pylint: disable=invalid-name
-        return self._attr('id', int)
+        return self.attr('id', int)
 
     @property
     def type(self) -> str:
-        return self._attr('type', str)
+        return self.attr('type', str)
 
     @property
     def timestamp(self) -> Optional[datetime]:
@@ -36,7 +37,7 @@ class Log(FileFarmObj):
 
     @property
     def done(self) -> bool:
-        return bool(self._attr('done', int))
+        return bool(self.attr('done', int))
 
     @property
     def notes(self) -> Optional[str]:
@@ -45,30 +46,30 @@ class Log(FileFarmObj):
     @property
     def asset(self) -> List[Asset]:
         key = self.key('asset')
-        return self._get_assets(key, Asset) if key else []
+        return self.farm.assets(key, Asset) if key else []
 
     @property
     def equipment(self) -> List[Equipment]:
         key = self.key('equipment')
-        return self._get_assets(key, Equipment) if key else []
+        return self.farm.assets(key, Equipment) if key else []
 
     @property
     def area(self) -> List[Area]:
         key = self.key('area')
-        return self._get_areas(key, Area) if key else []
+        return self.farm.areas(key, Area) if key else []
 
     @property
     def geofield(self) -> str:
-        return self._attr('geofield', str)
+        return self.attr('geofield', str)
 
     @property
     def movement(self) -> List[Area]:
         key = self.key('movement')['area']
-        return self._get_areas(key, Area) if key else []
+        return self.farm.areas(key, Area) if key else []
 
     @property
     def membership(self):
-        return self._attr('membership', str)
+        return self.attr('membership', str)
 
     @property
     def quantity(self) -> List[Quantity]:
@@ -84,7 +85,7 @@ class Log(FileFarmObj):
 
     @property
     def flags(self) -> str:
-        return self._attr('flags', str)
+        return self.attr('flags', str)
 
     @property
     def categories(self) -> List[Category]:
@@ -93,7 +94,7 @@ class Log(FileFarmObj):
 
     @property
     def owner(self):
-        return self._attr('log_owner', str)
+        return self.attr('log_owner', str)
 
     @property
     def created(self) -> Optional[datetime]:
@@ -110,7 +111,7 @@ class Log(FileFarmObj):
 
     @property
     def data(self) -> str:
-        return self._attr('data', str)
+        return self.attr('data', str)
 
     @property
     def inventory(self) -> List[Inventory]:
@@ -126,7 +127,7 @@ class LotLog(Log):
 
     @property
     def lot_number(self) -> str:
-        return self._attr('lot_number', str)
+        return self.attr('lot_number', str)
 
 
 class MoneyLog(LotLog):
@@ -141,30 +142,30 @@ class MoneyLog(LotLog):
 
     @property
     def total_price(self) -> float:
-        return self._attr('total_price', float)
+        return self.attr('total_price', float)
 
     @property
     def unit_price(self) -> float:
-        return self._attr('unit_price', float)
+        return self.attr('unit_price', float)
 
 
 class Input(LotLog):
 
     @property
     def material(self) -> str:
-        return self._attr('material', str)
+        return self.attr('material', str)
 
     @property
     def purpose(self) -> str:
-        return self._attr('input_purpose', str)
+        return self.attr('input_purpose', str)
 
     @property
     def method(self) -> str:
-        return self._attr('input_method', str)
+        return self.attr('input_method', str)
 
     @property
     def source(self) -> str:
-        return self._attr('input_source', str)
+        return self.attr('input_source', str)
 
     @property
     def date_purchase(self) -> Optional[datetime]:
@@ -175,7 +176,7 @@ class Seeding(LotLog):
 
     @property
     def seed_source(self) -> str:
-        return self._attr('seed_source', str)
+        return self.attr('seed_source', str)
 
 
 class Transplanting(Log):
@@ -198,7 +199,7 @@ class Purchase(MoneyLog):
 
     @property
     def seller(self) -> str:
-        return self._attr('seller', str)
+        return self.attr('seller', str)
 
 
 class Birth(Log):
@@ -213,11 +214,11 @@ class Sale(Log):
 
     @property
     def invoice_number(self) -> str:
-        return self._attr('invoice_number', str)
+        return self.attr('invoice_number', str)
 
     @property
     def customer(self) -> str:
-        return self._attr('customer', str)
+        return self.attr('customer', str)
 
 
 class Activity(Log):
@@ -228,7 +229,7 @@ class SoilTest(Log):
 
     @property
     def soil_lab(self) -> str:
-        return self._attr('soil_lab', str)
+        return self.attr('soil_lab', str)
 
     @property
     def soil_names(self) -> List[Soil]:
