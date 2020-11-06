@@ -1,6 +1,6 @@
 {
     "python.linting.pycodestyleEnabled": true,
-    "python.pythonPath": "C:\\Users\\lucas\\.virtualenvs\\farmer-L1tc3M0W\\Scripts\\python.exe",
+    "python.pythonPath": ".venv\\Scripts\\python.exe",
     "editor.rulers": [
         120
     ],
@@ -17,5 +17,8 @@
         }
     },
     "python.linting.pylintCategorySeverity.refactor": "Information",
-    "python.formatting.provider": "autopep8"
+    "python.formatting.provider": "autopep8",
+    "terminal.integrated.env.windows": {
+        "PIPENV_VENV_IN_PROJECT": "1"
+    }
 }
