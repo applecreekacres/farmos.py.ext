@@ -43,7 +43,7 @@ jobs:
     - uses: dschep/install-pipenv-action@v1
     - run: |
         pipenv shell && pipenv install -d
-        echo "::set-env name=CODEQL_PYTHON::$(which python)"
+        echo "CODEQL_PYTHON=.venv/Scripts/python" >> $GITHUB_ENV
       env:
         PIPENV_VENV_IN_PROJECT: 1
 
