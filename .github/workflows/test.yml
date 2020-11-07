@@ -19,8 +19,8 @@ jobs:
     - uses: actions/setup-python@v2.1.4
       with:
         python-version: 3.7
-    - uses: dschep/install-pipenv-action@v1
-    - run: pipenv install -d
+    - uses: Gr1N/setup-poetry@v4
+    - run: poetry install
     - run: |
         echo "HOST=$HOST" >> farmos.cfg
         echo "USER=$USER" >> farmos.cfg
@@ -29,8 +29,8 @@ jobs:
         HOST: ${{ secrets.FARMOS_HOST }}
         USER: ${{ secrets.FARMOS_USER }}
         PASS: ${{ secrets.FARMOS_PASS }}
-    - run: pipenv run coverage run --source=. -m pytest
-    - run: pipenv run coveralls
+    - run: poetry run coverage run --source=farmer -m pytest
+    - run: poetry run coveralls
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
