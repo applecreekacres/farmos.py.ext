@@ -30,7 +30,7 @@ jobs:
         USER: ${{ secrets.FARMOS_USER }}
         PASS: ${{ secrets.FARMOS_PASS }}
     - run: poetry run coverage run --source=farmer -m pytest
-    - run: poetry run coverallst
+    - run: poetry run coveralls
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
