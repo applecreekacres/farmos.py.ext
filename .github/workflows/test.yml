@@ -29,8 +29,8 @@ jobs:
         HOST: ${{ secrets.FARMOS_HOST }}
         USER: ${{ secrets.FARMOS_USER }}
         PASS: ${{ secrets.FARMOS_PASS }}
-    - run: poetry run coverage run --source=. -m pytest
-    - run: poetry run coveralls
+    - run: poetry run coverage run --source=farmer -m pytest
+    - run: poetry run coverallst
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
