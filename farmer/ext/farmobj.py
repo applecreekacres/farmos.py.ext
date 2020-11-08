@@ -58,3 +58,10 @@ class FileFarmObj(FarmObj):
     @property
     def files(self) -> List:
         return self.attr('files', list)
+
+
+class IDFarmObj(FileFarmObj):
+
+    @property
+    def id(self) -> Optional[int]:  # pylint: disable=invalid-name
+        return self.attr('id', int)

@@ -12,7 +12,7 @@ from farmer.ext.term import Category, Unit
 
 
 # pylint: disable=too-many-public-methods
-class Log(FileFarmObj):
+class Log(IDFarmObj):
 
     def __init__(self, farm, keys: Dict):
         if 'resource' not in keys:
@@ -22,10 +22,6 @@ class Log(FileFarmObj):
                 farm, farm.log.get({'id': keys['id']})['list'][0])
         else:
             raise KeyError('Key resource does not have value log')
-
-    @property
-    def id(self) -> Optional[int]:  # pylint: disable=invalid-name
-        return self.attr('id', int)
 
     @property
     def type(self) -> str:

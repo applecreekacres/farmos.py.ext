@@ -5,11 +5,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Dict, List, Union
 
-from farmer.ext.farmobj import FarmObj
+from farmer.ext.farmobj import FarmObj, IDFarmObj
 from farmer.ext.term import Crop, Season
 
 
-class Asset(FarmObj):
+class Asset(IDFarmObj):
 
     def __init__(self, farm, keys):
         if 'resource' not in keys:
@@ -17,10 +17,6 @@ class Asset(FarmObj):
         elif 'resource' in keys and keys['resource'] == 'farm_asset':
             super().__init__(
                 farm, farm.asset.get({'id': keys['id']})['list'][0])
-
-    @property
-    def id(self) -> int:  # pylint: disable=invalid-name
-        return self.attr('id', int)
 
     @property
     def type(self) -> str:
