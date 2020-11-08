@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Dict, List, Union
 
 from farmer.ext.farmobj import FarmObj
-from farmer.ext.term import Crop
+from farmer.ext.term import Crop, Season
 
 
 class Asset(FarmObj):
@@ -19,8 +19,8 @@ class Asset(FarmObj):
                 farm, farm.asset.get({'id': keys['id']})['list'][0])
 
     @property
-    def id(self) -> str:  # pylint: disable=invalid-name
-        return self.attr('id', str)
+    def id(self) -> int:  # pylint: disable=invalid-name
+        return self.attr('id', int)
 
     @property
     def type(self) -> str:
@@ -32,26 +32,27 @@ class Asset(FarmObj):
 
     @property
     def archived(self) -> Union[datetime, None]:
-        if self._keys != '0':
-            return FarmObj.timestamp_to_datetime(self._keys['archived'])
+        key = self.key('archived')
+        if key and key != '0':
+            return FarmObj.timestamp_to_datetime(self.key('archived'))
         else:
             return None
 
     @property
     def flags(self) -> List[str]:
-        return self.attr('flags', str)
+        return self.attr('flags', list)
 
     @property
     def created(self) -> Union[datetime, None]:
-        return FarmObj.timestamp_to_datetime(self._keys['created'])
+        return FarmObj.timestamp_to_datetime(self.key('created'))
 
     @property
     def changed(self) -> Union[datetime, None]:
-        return FarmObj.timestamp_to_datetime(self._keys['changed'])
+        return FarmObj.timestamp_to_datetime(self.key('changed'))
 
     @property
     def uid(self) -> Union[int, None]:
-        return int(self._keys['uid']) if self._keys['uid'] else None
+        return int(self.key('uid')) if self.key('uid') else None
 
     @property
     def data(self) -> str:
@@ -62,11 +63,11 @@ class Planting(Asset):
 
     @property
     def crop(self) -> List[Crop]:
-        return self.farm.terms(self._keys['crop'], Crop)
+        return self.farm.terms(self.key('crop'), Crop)
 
     @property
     def season(self):
-        return None
+        return self.farm.terms(self.key('season'), Season)
 
 
 class Animal(Asset):
@@ -97,7 +98,7 @@ class Animal(Asset):
 
     @property
     def birth_date(self) -> Union[datetime, None]:
-        return FarmObj.timestamp_to_datetime(self._keys['date'])
+        return FarmObj.timestamp_to_datetime(self.key('date'))
 
 
 class Equipment(Asset):
