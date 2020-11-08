@@ -6,7 +6,7 @@ from typing import Dict, List, Optional
 
 from farmer.ext.area import Area
 from farmer.ext.asset import Asset, Equipment
-from farmer.ext.farmobj import FarmObj, FileFarmObj
+from farmer.ext.farmobj import FarmObj, IDFarmObj
 from farmer.ext.others import Inventory, Quantity, Soil
 from farmer.ext.term import Category, Unit
 
