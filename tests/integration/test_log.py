@@ -1,24 +1,14 @@
 
 from datetime import datetime
-
 from farmer import Farm
-from farmer.ext.log import Log
 
 
-def test_log_empty():
-    log = Log(Farm(), {})
-    assert log.id is None
+def test_log():
+    farm = Farm()
+    log = next(farm.logs(800))
 
-
-def test_log_data():
-    log = Log(Farm(), {
-        'id': 5,
-        'type': 'farm_activity',
-        'timestamp': datetime(2020, 11, 2).timestamp(),
-        'done': '0'
-    })
-
-    assert log.id == 5
-    assert log.type == 'farm_activity'
-    assert log.done is False
-    assert not log.asset
+    assert log.id == 800
+    assert log.done
+    assert log.flags == ['organic']
+    assert log.categories[0].name == 'Plantings'
+    assert log.created == datetime(2020, 10, 15, 22, 55, 59)

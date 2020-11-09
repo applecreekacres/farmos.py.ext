@@ -81,6 +81,8 @@ class Farm(farmOS):
             for filt in filters:
                 for log in self.log.get(filt):
                     yield log_class(self, keys=log)
+        elif isinstance(filters, int):
+            yield log_class(self, keys=self.log.get(filters))
         else:
             for log in self.log.get(filters):
                 yield log_class(self, keys=log)

@@ -36,7 +36,6 @@ def test_asset_complete(mock_farm: MagicMock):
         "flags": ['a', 'b'],
         "changed": int(changed.timestamp()),
         "type": "planting",
-        "id": '7',
         "uid": '56',
         'archived': int(archived.timestamp())
     })
@@ -49,7 +48,6 @@ def test_asset_complete(mock_farm: MagicMock):
     assert asset.flags == ['a', 'b']
     assert asset.changed.timestamp() == changed.timestamp()
     assert asset.type == "planting"
-    assert asset.id == 7
     assert asset.uid == 56
     assert asset.archived.timestamp() == archived.timestamp()
 

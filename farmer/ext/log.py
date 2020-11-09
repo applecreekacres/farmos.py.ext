@@ -29,7 +29,7 @@ class Log(IDFarmObj):
 
     @property
     def timestamp(self) -> Optional[datetime]:
-        return FarmObj.timestamp_to_datetime(self._keys['timestamp'])
+        return FarmObj.timestamp_to_datetime(self.key('timestamp'))
 
     @property
     def done(self) -> bool:
@@ -37,7 +37,7 @@ class Log(IDFarmObj):
 
     @property
     def notes(self) -> Optional[str]:
-        return self._keys['notes']['value'] if self._keys['notes'] else None
+        return self.key('notes')['value'] if self.key('notes') else None
 
     @property
     def asset(self) -> List[Asset]:
@@ -55,23 +55,25 @@ class Log(IDFarmObj):
         return self.farm.areas(key, Area) if key else []
 
     @property
-    def geofield(self) -> str:
+    def geofield(self) -> Optional[str]:
         return self.attr('geofield', str)
 
     @property
     def movement(self) -> List[Area]:
-        key = self.key('movement')['area']
-        return self.farm.areas(key, Area) if key else []
+        if self.key('movement'):
+            key = self.key('movement')['area']
+            return self.farm.areas(key, Area) if key else []
+        return []
 
     @property
-    def membership(self):
+    def membership(self) -> str:
         return self.attr('membership', str)
 
     @property
     def quantity(self) -> List[Quantity]:
-        if self._keys['quantity']:
+        if self.key('quantity'):
             ret = []
-            for quantity in self._keys['quantity']:
+            for quantity in self.key('quantity'):
                 ret.append(Quantity(measure=quantity['measure'],
                                     label=quantity['label'],
                                     value=quantity['value'],
@@ -80,13 +82,13 @@ class Log(IDFarmObj):
         return []
 
     @property
-    def flags(self) -> str:
-        return self.attr('flags', str)
+    def flags(self) -> List[str]:
+        return self.attr('flags', list)
 
     @property
     def categories(self) -> List[Category]:
-        key = self._keys['log_category']
-        return [Category(self._farm, x) for x in key]
+        key = self.key('log_category')
+        return [Category(self._farm, x) for x in key] if key else []
 
     @property
     def owner(self):
@@ -94,15 +96,15 @@ class Log(IDFarmObj):
 
     @property
     def created(self) -> Optional[datetime]:
-        return FarmObj.timestamp_to_datetime(self._keys['created'])
+        return FarmObj.timestamp_to_datetime(self.key('created'))
 
     @property
     def changed(self) -> Optional[datetime]:
-        return FarmObj.timestamp_to_datetime(self._keys['changed'])
+        return FarmObj.timestamp_to_datetime(self.key('changed'))
 
     @property
     def uid(self) -> Optional[int]:
-        key = self._keys['uid']
+        key = self.key('uid')
         return int(key) if key else None
 
     @property
@@ -111,9 +113,9 @@ class Log(IDFarmObj):
 
     @property
     def inventory(self) -> List[Inventory]:
-        if self._keys['inventory']:
+        if self.key('inventory'):
             ret = []
-            for inventory in self._keys['inventory']:
+            for inventory in self.key('inventory'):
                 ret.append(Inventory(inventory['value'], inventory['asset']['id']))
             return ret
         return []
@@ -165,7 +167,7 @@ class Input(LotLog):
 
     @property
     def date_purchase(self) -> Optional[datetime]:
-        return FarmObj.timestamp_to_datetime(self._keys['date_purchase'])
+        return FarmObj.timestamp_to_datetime(self.key('date_purchase'))
 
 
 class Seeding(LotLog):

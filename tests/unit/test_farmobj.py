@@ -2,7 +2,7 @@ from datetime import datetime
 
 import mock
 from farmer import Farm
-from farmer.ext.farmobj import FarmObj, FileFarmObj
+from farmer.ext.farmobj import FarmObj, FileFarmObj, IDFarmObj
 
 
 @mock.patch("farmer.Farm")
@@ -46,3 +46,17 @@ def test_timestamp_to_datetime():
     date = datetime(2020, 6, 26, 5, 4, 34)
     assert date == FarmObj.timestamp_to_datetime(date.timestamp())
     assert not FarmObj.timestamp_to_datetime(None)
+
+
+@mock.patch("farmer.Farm")
+def test_id_farmobj_empty(mock_farm):
+    obj = IDFarmObj(mock_farm, {})
+
+    assert not obj.id
+
+
+@mock.patch("farmer.Farm")
+def test_id_farmobj_data(mock_farm):
+    obj = IDFarmObj(mock_farm, {"id": 5})
+
+    assert obj.id == 5
