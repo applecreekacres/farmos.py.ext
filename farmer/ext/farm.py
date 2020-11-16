@@ -141,12 +141,12 @@ class Farm(farmOS):
             yield Season(self, season)
 
     @property
-    def crop_families(self) -> Iterable[CropFamily]:
+    def crop_families(self) -> Iterator[CropFamily]:
         for fam in self.term.get("farm_crop_families")['list']:
             yield CropFamily(self, keys=fam)
 
     @property
-    def crops(self) -> Iterable[Crop]:
+    def crops(self) -> Iterator[Crop]:
         for crop in self.term.get("farm_crops")['list']:
             yield Crop(self, crop)
 
