@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Type, TYPE_CHECKING
+from typing import Any, Dict, Optional, Type, TYPE_CHECKING
 if TYPE_CHECKING:
     from farmer.ext.farm import Farm  # pylint: disable=cyclic-import
 
@@ -42,26 +42,3 @@ class FarmObj():
     @property
     def name(self) -> str:
         return self.key('name')
-
-    @property
-    def images(self) -> List:
-        """Image files attached to the area.
-
-        Returns:
-            List: Encoded image files.
-        """
-        return self.key('images')
-
-
-class FileFarmObj(FarmObj):
-
-    @property
-    def files(self) -> List:
-        return self.attr('files', list)
-
-
-class IDFarmObj(FileFarmObj):
-
-    @property
-    def id(self) -> Optional[int]:  # pylint: disable=invalid-name
-        return self.attr('id', int)

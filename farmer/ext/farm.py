@@ -14,6 +14,7 @@ from farmer.ext.log import (Activity, Birth, Harvest, Input, Log, Maintenance,
 from farmer.ext.others import Content, Quantity
 from farmer.ext.term import Crop, CropFamily, Season, Term, Unit
 from farmOS import farmOS  # pylint: disable=wrong-import-order
+from farmOS.client import BaseAPI  # pylint: disable=wrong-import-order
 
 
 class FarmTypeMissingError(Exception):
@@ -25,13 +26,21 @@ def farm():
     return Farm()
 
 
+class FileAPI(BaseAPI):
+
+    def __init__(self, session):
+        # Define 'log' as the farmOS API entity endpoint
+        super().__init__(session=session, entity_type='file')
+
+
 # pylint: disable=too-many-public-methods
 class Farm(farmOS):
 
-    def __init__(self):
+    def __init__(self, local_resources="./resources"):
         self._host = None
         self._user = None
         self._pass = None
+        self.local_resources = local_resources
 
         if os.path.exists("farmos.cfg"):
             with open('farmos.cfg') as cfg:
@@ -52,6 +61,7 @@ class Farm(farmOS):
             self._token = self.authorize(self._user, self._pass)
         else:
             raise Exception('farmos.cfg not found.')
+        self.file = FileAPI(self.session)
 
     def assets(self,
                filters: Union[Dict, List[Dict], int, str] = None,

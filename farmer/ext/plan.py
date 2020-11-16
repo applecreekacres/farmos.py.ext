@@ -1,9 +1,9 @@
 
-from farmer.ext.farmobj import FileFarmObj
+from farmer.ext.farmobj import FarmObj
 from farmer.ext.term import Season
 
 
-class Plan(FileFarmObj):
+class Plan(FarmObj):
     pass
 
 

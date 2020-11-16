@@ -2,17 +2,18 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, Iterator, List, Optional
 
 from farmer.ext.area import Area
 from farmer.ext.asset import Asset, Equipment
-from farmer.ext.farmobj import FarmObj, IDFarmObj
+from farmer.ext.farmobj import FarmObj
+from farmer.ext.file import File
 from farmer.ext.others import Inventory, Quantity, Soil
 from farmer.ext.term import Category, Unit
 
 
 # pylint: disable=too-many-public-methods
-class Log(IDFarmObj):
+class Log(FarmObj):
 
     def __init__(self, farm, keys: Dict):
         if 'resource' not in keys:
@@ -22,6 +23,10 @@ class Log(IDFarmObj):
                 farm, farm.log.get({'id': keys['id']})['list'][0])
         else:
             raise KeyError('Key resource does not have value log')
+
+    @property
+    def id(self) -> Optional[int]:  # pylint: disable=invalid-name
+        return self.attr('id', int)
 
     @property
     def type(self) -> str:
@@ -119,6 +124,22 @@ class Log(IDFarmObj):
                 ret.append(Inventory(inventory['value'], inventory['asset']['id']))
             return ret
         return []
+
+    @property
+    def images(self) -> Iterator[File]:
+        keys = self.key('images')
+        if keys:
+            for key in keys:
+                if 'file' in key:
+                    yield File(self, key['file'])
+
+    @property
+    def files(self) -> Iterator[File]:
+        keys = self.key('files')
+        if keys:
+            for key in keys:
+                if 'file' in key:
+                    yield File(self, key['file'])
 
 
 class LotLog(Log):

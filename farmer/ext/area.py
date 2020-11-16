@@ -5,10 +5,10 @@ from __future__ import annotations
 from typing import Dict, List, Union
 
 from farmer.ext.asset import Asset
-from farmer.ext.farmobj import FileFarmObj
+from farmer.ext.farmobj import FarmObj
 
 
-class Area(FileFarmObj):
+class Area(FarmObj):
     """Area located within a Farm."""
 
     @property
