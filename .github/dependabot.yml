@@ -9,9 +9,17 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
-      
+    labels:
+      - "dependencies"
+      - "python"
+      - "automerge"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       # Check for updates to GitHub Actions every weekday
       interval: "daily"
+    labels:
+      - "dependencies"
+      - "github_actions"
+      - "automerge"
