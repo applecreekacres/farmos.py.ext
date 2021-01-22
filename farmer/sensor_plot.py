@@ -1,10 +1,13 @@
 
-import requests
 import json
 from datetime import datetime, timedelta
-import matplotlib.pyplot as plt
 
-#Attempt 2
+import matplotlib.pyplot as plt
+import requests
+
+from farmer.ext.sensor import Sensor
+
+# Attempt 2
 PUB_KEY = "770eba8368bd4e29078cef0294b6ab2e"
 PRV_KEY = "aa8ccf9b7a6ec56412851e041a72ea17"
 
@@ -13,28 +16,27 @@ PRV_KEY = "aa8ccf9b7a6ec56412851e041a72ea17"
 # PRV_KEY = "de044e9af43acd486341e00f88e8b37b"
 
 HOST = "https://applecreekacres.farmos.net/"
-SENSOR_URL = "farm/sensor/listener/"
-FULL_URL = "{0}{1}{2}".format(HOST, SENSOR_URL, PUB_KEY)
-# FULL_URL = "{0}{1}{2}?private_key={3}".format(HOST, SENSOR_URL, PUB_KEY, PRV_KEY)
 
 
 def main():
-    data = {
-        "private_key": PRV_KEY,
-        "name": "temperature",
-        "start": datetime(2021, 1, 1, 0, 0, 0).timestamp(),
-        "end": datetime.now().timestamp(),
-        "limit": 0
-    }
-    req = requests.get(FULL_URL, params=data)
-    record = json.loads(req.text)
-    x = []
-    y = []
-    for point in record:
-        x.append(datetime.fromtimestamp(float(point['timestamp'])))
-        y.append(float(point[data['name']]))
-    x.reverse()
-    y.reverse()
+    sensor = Sensor(HOST, PUB_KEY, PRV_KEY)
+    record = sensor.get('temperature', datetime(2021, 1, 5, 4, 20, 0), datetime(2021, 1, 5, 5, 00, 0), 0)
+    pass
+    # record = sensor.get('temperature', datetime(2021, 1, 1, 0, 0, 0), datetime.now(), 0)
+
+    # x, y = build_data(record)
+    # hour_pts, hour_min, hour_max, hour_avg = calculate_metrics(x, y)
+    # plot_data(hour_pts, hour_min, hour_max, hour_avg)
+
+
+def plot_data(hour_pts, hour_min, hour_max, hour_avg):
+    plt.plot(hour_pts, hour_min, 'b-', hour_pts, hour_max, 'r-', hour_pts, hour_avg, 'g-')
+    plt.ylabel('temperature')
+    # plt.axis([x[0], x[-1], -10, 60])
+    plt.show()
+
+
+def calculate_metrics(x, y):
     hour_min = []
     hour_avg = []
     hour_max = []
@@ -43,7 +45,8 @@ def main():
         for month in range(x[0].month, x[-1].month + 1):
             for day in range(1, x[-1].day + 1):
                 for hour in range(0, 24):
-                    point_indices = [x.index(time) for time in x if datetime(year, month, day, hour, time.minute) == time]
+                    point_indices = [x.index(time) for time in x if datetime(
+                        year, month, day, hour, time.minute) == time]
                     values = [y[index] for index in point_indices]
                     if values:
                         hour_min.append(min(values))
@@ -51,11 +54,18 @@ def main():
                         hour_avg.append(sum(values) / len(values))
                         hour_pts.append(datetime(year, month, day, hour) + timedelta(hours=1))
                     pass
+    return hour_pts, hour_min, hour_max, hour_avg
 
-    plt.plot(hour_pts, hour_min, 'b-', hour_pts, hour_max, 'r-', hour_pts, hour_avg, 'g-')
-    plt.ylabel(data['name'])
-    # plt.axis([x[0], x[-1], -10, 60])
-    plt.show()
+
+def build_data(record):
+    x = []
+    y = []
+    for point in record:
+        x.append(datetime.fromtimestamp(float(point['timestamp'])))
+        y.append(float(point[data['name']]))
+    x.reverse()
+    y.reverse()
+    return x, y
 
 
 if __name__ == "__main__":
