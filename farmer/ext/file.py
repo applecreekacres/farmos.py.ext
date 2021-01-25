@@ -19,7 +19,7 @@ class File(FarmObj):
             super().__init__(farm, keys)
         elif 'resource' in keys and keys['resource'] == 'file':
             super().__init__(
-                farm, farm.files.get({'id': keys['id']})['list'][0])
+                farm, farm.file.get({'id': keys['id']})['list'][0])
         else:
             raise KeyError('Key resource does not have value log')
 
