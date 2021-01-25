@@ -4,6 +4,7 @@ import json
 import time
 from datetime import datetime
 from typing import Dict, List
+import os
 
 import requests
 
@@ -11,12 +12,33 @@ FULL_URL = "{0}{1}{2}"
 SENSOR_URL = "farm/sensor/listener/"
 
 
+class FarmSensorException(Exception):
+    pass
+
+
 class Sensor():
 
-    def __init__(self, farm: str, pub: str, prv: str = None) -> None:
-        self._private_key = prv
-        self._public_key = pub
-        self._url = FULL_URL.format(farm, SENSOR_URL, pub)
+    def __init__(self, farm: str = None, pub: str = None, prv: str = None) -> None:
+        if not pub:
+            if os.environ.get("FARM_SENSOR_PUB_KEY"):
+                self._public_key = os.environ.get("FARM_SENSOR_PUB_KEY")
+            else:
+                raise FarmSensorException("No Sensor Public Key found")
+        else:
+            self._public_key = pub
+
+        if not prv:
+            if os.environ.get("FARM_SENSOR_PRV_KEY"):
+                self._private_key = os.environ.get("FARM_SENSOR_PRV_KEY")
+        else:
+            self._private_key = prv
+
+        if not farm:
+            if os.environ.get('FARM_SENSOR_HOST'):
+                farm = os.environ.get('FARM_SENSOR_HOST')
+            else:
+                raise FarmSensorException("No Farm Host URL found")
+        self._url = FULL_URL.format(farm, SENSOR_URL, self._public_key)
 
     def upload(self, data: Dict, sleep=True):
         requests.post(self._url, params={"private_key": self._private_key}, json=data)

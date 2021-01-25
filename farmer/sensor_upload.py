@@ -9,8 +9,6 @@ from tkinter import filedialog
 from farmer.ext.sensor import Sensor
 from farmer.weathercloud import WeatherCloud
 
-HOST = "https://applecreekacres.farmos.net/"
-
 root = tk.Tk()
 root.withdraw()
 DATA_FILE = filedialog.askopenfilename()
@@ -33,7 +31,7 @@ first_good_sample_point = datetime(2020, 12, 26, 18, 00, 00)
 
 
 def main():
-    sensor = Sensor(HOST, PUB_KEY, PRV_KEY)
+    sensor = Sensor()
     summary = sensor.summary()
     data_uploaded = True
     start = datetime.now()
