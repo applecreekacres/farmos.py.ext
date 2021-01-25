@@ -1,9 +1,9 @@
 
-import json
+# pylint: disable=invalid-name
+
 from datetime import datetime, timedelta
 
 import matplotlib.pyplot as plt
-import requests
 
 from farmer.ext.sensor import Sensor
 
@@ -12,13 +12,11 @@ HOST = "https://applecreekacres.farmos.net/"
 
 def main():
     sensor = Sensor(HOST, PUB_KEY, PRV_KEY)
-    record = sensor.get('temperature', datetime(2021, 1, 5, 4, 20, 0), datetime(2021, 1, 5, 5, 00, 0), 0)
-    pass
-    # record = sensor.get('temperature', datetime(2021, 1, 1, 0, 0, 0), datetime.now(), 0)
+    record = sensor.get('temperature', datetime(2021, 1, 1, 0, 0, 0), datetime.now(), 0)
 
-    # x, y = build_data(record)
-    # hour_pts, hour_min, hour_max, hour_avg = calculate_metrics(x, y)
-    # plot_data(hour_pts, hour_min, hour_max, hour_avg)
+    x, y = build_data(record)
+    hour_pts, hour_min, hour_max, hour_avg = calculate_metrics(x, y)
+    plot_data(hour_pts, hour_min, hour_max, hour_avg)
 
 
 def plot_data(hour_pts, hour_min, hour_max, hour_avg):
@@ -45,7 +43,6 @@ def calculate_metrics(x, y):
                         hour_max.append(max(values))
                         hour_avg.append(sum(values) / len(values))
                         hour_pts.append(datetime(year, month, day, hour) + timedelta(hours=1))
-                    pass
     return hour_pts, hour_min, hour_max, hour_avg
 
 
@@ -54,7 +51,7 @@ def build_data(record):
     y = []
     for point in record:
         x.append(datetime.fromtimestamp(float(point['timestamp'])))
-        y.append(float(point[data['name']]))
+        y.append(float(point['name']))
     x.reverse()
     y.reverse()
     return x, y

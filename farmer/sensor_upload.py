@@ -1,15 +1,10 @@
 """Upload sensor data to server."""
 
-import csv
-import json
-import subprocess
-import time
-from datetime import datetime
 
 # import easygui
 import tkinter as tk
+from datetime import datetime
 from tkinter import filedialog
-import requests
 
 from farmer.ext.sensor import Sensor
 from farmer.weathercloud import WeatherCloud
@@ -48,15 +43,15 @@ def main():
         with WeatherCloud(DATA_FILE) as data:
             print("Uploading data from {}".format(DATA_FILE))
             for item in data:
-                record_date = datetime.strptime(item["Date (America/Chicago)"], "%Y-%m-%d %H:%M:%S")
-                if (not summary or not sensor.get(start=record_date, end=record_date)) and record_date >= first_good_sample_point:
+                date = datetime.strptime(item["Date (America/Chicago)"], "%Y-%m-%d %H:%M:%S")
+                if (not summary or not sensor.get(start=date, end=date)) and date >= first_good_sample_point:
                     record = {
-                        "timestamp": record_date.timestamp()
+                        "timestamp": date.timestamp()
                     }
                     for key in FIELD_MAPPING:
                         if item[FIELD_MAPPING[key]]:
                             record[key] = float(item[FIELD_MAPPING[key]].replace(',', ''))
-                    print("Record for {} uploaded".format(record_date))
+                    print("Record for {} uploaded".format(date))
                     sensor.upload(record)
                     data_uploaded = True  # Set flag so that loop will come back and check file again
                 # else:

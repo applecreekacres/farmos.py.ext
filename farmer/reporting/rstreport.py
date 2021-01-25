@@ -1,6 +1,5 @@
 
 from __future__ import annotations
-from os import replace
 
 from typing import Dict, List, Union
 
@@ -32,7 +31,9 @@ class RstReporter(Report):
 
     @staticmethod
     def _sanitize(text: str):
-        cleaned = text.replace("<p>", "").replace("</p>", "").replace("&nbsp;", "\n").replace("\n\n", "\n").replace("<br />", "\n\n").replace("<dl>", "\n").replace("</dl>", "\n").replace("<dd>", "\n\n").replace("</dd>", "\n\n").replace("<dt>", "**").replace("</dt>", "**\n")
+        cleaned = text.replace("<p>", "").replace("</p>", "").replace("&nbsp;", "\n").replace("\n\n", "\n").replace(
+            "<br />", "\n\n").replace("<dl>", "\n").replace("</dl>", "\n").replace("<dd>", "\n\n").replace(
+                "</dd>", "\n\n").replace("<dt>", "**").replace("</dt>", "**\n")
         return cleaned.replace("\n\n", "\n")
 
     def _append(self, text: str):
