@@ -14,14 +14,6 @@ import requests
 from farmer.ext.sensor import Sensor
 from farmer.weathercloud import WeatherCloud
 
-# Attempt 2
-PUB_KEY = "770eba8368bd4e29078cef0294b6ab2e"
-PRV_KEY = "aa8ccf9b7a6ec56412851e041a72ea17"
-
-# First Station created
-# PUB_KEY = "8f47bee4b063bbf5ee712e246ea893fb"
-# PRV_KEY = "de044e9af43acd486341e00f88e8b37b"
-
 HOST = "https://applecreekacres.farmos.net/"
 
 root = tk.Tk()
