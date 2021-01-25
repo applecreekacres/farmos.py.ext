@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from farmer.ext.file import File
+from typing import Dict, Iterator, List, Optional
 
 from farmer.ext.farmobj import FarmObj
 from farmOS import farmOS  # pylint: disable=wrong-import-order
@@ -83,6 +84,14 @@ class Crop(Term):
     def transplant_days(self) -> Optional[int]:
         key = self.key('transplant_days')
         return int(key) if key else None
+
+    @property
+    def images(self) -> Iterator[File]:
+        keys = self.key('images')
+        if keys:
+            for key in keys:
+                if 'file' in key:
+                    yield File(self.farm, key['file'])
 
 
 class Unit(FarmObj):
