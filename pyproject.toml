@@ -13,7 +13,7 @@ Pygments = "^2.7.4"
 click = "^7.1.2"
 prompt-toolkit = "^3.0.14"
 fuzzyfinder = "^2.1.0"
-matplotlib = "^3.3.3"
+matplotlib = "^3.3.4"
 
 [tool.poetry.dev-dependencies]
 rope = "^0.18.0"
