@@ -14,7 +14,7 @@ class WeatherCloud():
 
     def __enter__(self) -> List[Dict]:
         data = []
-        self._data_file = open(self._database, 'r')
+        self._data_file = open(self._database, 'r', encoding='utf-16-le')
         data = csv.DictReader((line.replace('\0', '') for line in self._data_file), delimiter=';')
         return data
 
