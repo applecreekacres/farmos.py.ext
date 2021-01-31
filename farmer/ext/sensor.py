@@ -43,7 +43,11 @@ class Sensor():
     def upload(self, data: Dict, sleep=True):
         requests.post(self._url, params={"private_key": self._private_key}, json=data)
         if sleep:
-            time.sleep(60)
+            countdown = "Upload delay ending in: {} seconds"
+            for index in range(0, 70):
+                print(countdown.format(70-index), end="\r")
+                time.sleep(1)
+            print(" " * len(countdown), end='\r')
 
     def get(self, name: str = None, start: datetime = None, end: datetime = None, limit: int = 0) -> List[Dict]:
         data = {}
