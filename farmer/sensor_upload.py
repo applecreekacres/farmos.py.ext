@@ -70,6 +70,7 @@ def main():
                     data_uploaded = True  # Set flag so that loop will come back and check file again
                 else:
                     print("Record for {} will not be uploaded".format(date))
+        data_uploaded = data_uploaded if multi_passes else False
     total = datetime.now() - start
     print("Uploaded data in {}".format(total))
     print("Made {} passes".format(passes))
