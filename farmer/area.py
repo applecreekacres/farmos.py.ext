@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Dict, List, Union
 
-from farmer.ext.asset import Asset
-from farmer.ext.farmobj import FarmObj
+from farmer.asset import Asset
+from farmer.farmobj import FarmObj
 
 
 class Area(FarmObj):

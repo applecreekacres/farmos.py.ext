@@ -1,7 +1,7 @@
 import mock
 from mock.mock import MagicMock
 
-from farmer.ext.area import Area
+from farmer.area import Area
 
 
 @mock.patch("farmer.Farm")

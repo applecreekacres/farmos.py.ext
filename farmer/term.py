@@ -3,8 +3,8 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Dict, Iterator, List, Optional
 
-from farmer.ext.farmobj import FarmObj
-from farmer.ext.file import File
+from farmer.farmobj import FarmObj
+from farmer.file import File
 from farmOS import farmOS  # pylint: disable=wrong-import-order
 
 

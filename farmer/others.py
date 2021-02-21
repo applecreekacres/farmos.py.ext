@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, Union
 
-from farmer.ext.farmobj import FarmObj
+from farmer.farmobj import FarmObj
 
 
 class Measure(Enum):

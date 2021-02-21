@@ -1,5 +1,5 @@
 
-from farmer.ext.farm import Farm
+from farmer.farm import Farm
 
 
 def test_season():

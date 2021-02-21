@@ -5,8 +5,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Dict, List, Optional, Union
 
-from farmer.ext.farmobj import FarmObj
-from farmer.ext.term import Crop, Season
+from farmer.farmobj import FarmObj
+from farmer.term import Crop, Season
 
 
 class Asset(FarmObj):

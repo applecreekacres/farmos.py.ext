@@ -1,2 +1,2 @@
 
-from farmer.ext import Farm
+from farmer.farm import Farm

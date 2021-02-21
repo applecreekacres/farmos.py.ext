@@ -1,10 +1,10 @@
 
 from datetime import datetime
-from farmer.ext.area import Area
-from farmer.ext.asset import Asset, Equipment
+from farmer.area import Area
+from farmer.asset import Asset, Equipment
 from mock import patch
 from mock.mock import MagicMock
-from farmer.ext.log import Log
+from farmer.log import Log
 
 
 @patch("farmer.Farm")

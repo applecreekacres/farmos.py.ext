@@ -6,10 +6,10 @@ import os
 
 from typing import Dict, Optional, TYPE_CHECKING
 
-from farmer.ext.farmobj import FarmObj
+from farmer.farmobj import FarmObj
 
 if TYPE_CHECKING:
-    from farmer.ext.farm import Farm  # pylint: disable=cyclic-import
+    from farmer.farm import Farm  # pylint: disable=cyclic-import
 
 
 class File(FarmObj):

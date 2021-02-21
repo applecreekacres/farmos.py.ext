@@ -1,6 +1,6 @@
 import mock
 from farmer import Farm
-from farmer.ext.others import Content, Inventory, Measure, Quantity
+from farmer.others import Content, Inventory, Measure, Quantity
 
 
 def test_quantity():

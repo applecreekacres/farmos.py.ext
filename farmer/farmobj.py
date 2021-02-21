@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, Optional, Type, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, Optional, Type
+
 if TYPE_CHECKING:
-    from farmer.ext.farm import Farm  # pylint: disable=cyclic-import
+    from farmer.farm import Farm  # pylint: disable=cyclic-import
 
 
 class FarmObj():

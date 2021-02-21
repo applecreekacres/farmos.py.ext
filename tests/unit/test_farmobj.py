@@ -2,7 +2,7 @@ from datetime import datetime
 
 import mock
 from farmer import Farm
-from farmer.ext.farmobj import FarmObj
+from farmer.farmobj import FarmObj
 
 
 @mock.patch("farmer.Farm")

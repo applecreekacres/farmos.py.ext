@@ -1,9 +1,9 @@
 from datetime import date, datetime
-from farmer.ext.term import Crop, Season
+from farmer.term import Crop, Season
 import mock
 from mock.mock import MagicMock
 
-from farmer.ext.asset import Asset, Planting
+from farmer.asset import Asset, Planting
 
 
 @mock.patch("farmer.Farm")
