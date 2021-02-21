@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "farmos-ext"
 version = "0.1.0"
-description = ""
+description = "Extensions to FarmOS API"
 authors = ["Lucas Brendel <lucasbrendel@gmail.com>"]
 license = "MIT"
 
@@ -29,9 +29,8 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.semantic_release]
-version_variable = [
-    "src_folder/__init__.py:__version__",
-    "pyproject.toml:version"
+version_toml = [
+    "pyproject.toml:tool.poetry.version"
 ]
 branch = "master"
 upload_to_pypi = true
