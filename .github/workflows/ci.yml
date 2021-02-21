@@ -1,0 +1,59 @@
+name: CI
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  Quality:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2.2.1
+      with:
+        python-version: 3.8
+    - uses: Gr1N/setup-poetry@v4
+    - run: poetry install
+    - name: Pylint
+      run: poetry run pylint farmer
+
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2.2.1
+      with:
+        python-version: 3.8
+    - uses: Gr1N/setup-poetry@v4
+    - run: poetry install
+    - run: |
+        echo "HOST=$HOST" >> farmos.cfg
+        echo "USER=$USER" >> farmos.cfg
+        echo "PASS=$PASS" >> farmos.cfg
+      env:
+        HOST: ${{ secrets.FARMOS_HOST }}
+        USER: ${{ secrets.FARMOS_USER }}
+        PASS: ${{ secrets.FARMOS_PASS }}
+    - run: poetry run coverage run --source=farmer -m pytest
+    - run: poetry run coveralls --service=github
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  Release:
+    needs: [Quality, Test]
+    # https://github.community/t/how-do-i-specify-job-dependency-running-in-another-workflow/16482
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && !contains(github.event.head_commit.message, 'chore(release):')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Semantic Release
+        run: |
+          poetry install
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          semantic-release publish
