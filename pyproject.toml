@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "farmer"
+name = "farmos-ext"
 version = "0.1.0"
 description = ""
 authors = ["Lucas Brendel <lucasbrendel@gmail.com>"]
