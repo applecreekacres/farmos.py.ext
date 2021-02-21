@@ -2,4 +2,4 @@
 
 Helper scripts for FarmOS
 
-[![Coverage Status](https://coveralls.io/repos/github/applecreekacres/farmer/badge.svg?branch=master)](https://coveralls.io/github/applecreekacres/farmer?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/applecreekacres/farmos.py.ext/badge.svg)](https://coveralls.io/github/applecreekacres/farmos.py.ext)
