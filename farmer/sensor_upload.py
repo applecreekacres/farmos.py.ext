@@ -33,13 +33,10 @@ first_good_sample_point = datetime(2020, 12, 26, 18, 00, 00)
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", required=False, action='store_true')
-    parser.add_argument("-a", required=False, action='store_true')
-    parser.add_argument("-p", required=False, action='store_true')
+    parser.add_argument("-n", "--dry-run", required=False, action='store_true')
+    parser.add_argument("-a", "--all", required=False, action='store_true')
+    parser.add_argument("-p", "--multi-passes", required=False, action='store_true')
     args = parser.parse_args()
-    dry_run = args.n
-    all_points = args.a
-    multi_passes = args.p
     sensor = Sensor()
     summary = sensor.summary()
     data_uploaded = True
@@ -47,13 +44,13 @@ def main():
     start = datetime.now()
     while data_uploaded:
         # Reset flag after entering loop if doing multiple passes
-        data_uploaded = False if not multi_passes else True
+        data_uploaded = args.multi_passes
         passes += 1
         with WeatherCloud(DATA_FILE) as data:
             print("Uploading data from {}".format(DATA_FILE))
             for item in data:
                 date = datetime.strptime(item["Date (America/Chicago)"], "%Y-%m-%d %H:%M:%S")
-                if all_points:
+                if args.all:
                     upload = (not summary or not sensor.get(start=date, end=date)) and date >= first_good_sample_point
                 else:
                     upload = (not summary or int(summary['temperature']['last']) < date.timestamp())
@@ -65,12 +62,12 @@ def main():
                         if item[FIELD_MAPPING[key]]:
                             record[key] = float(item[FIELD_MAPPING[key]].replace(',', ''))
                     print("Record for {} uploaded".format(date))
-                    if not dry_run:
+                    if not args.dry_run:
                         sensor.upload(record)
                     data_uploaded = True  # Set flag so that loop will come back and check file again
                 else:
                     print("Record for {} will not be uploaded".format(date))
-        data_uploaded = data_uploaded if multi_passes else False
+        data_uploaded = data_uploaded if args.multi_passes else False
     total = datetime.now() - start
     print("Uploaded data in {}".format(total))
     print("Made {} passes".format(passes))
