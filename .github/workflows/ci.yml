@@ -16,7 +16,7 @@ jobs:
     - uses: Gr1N/setup-poetry@v4
     - run: poetry install
     - name: Pylint
-      run: poetry run pylint farmer
+      run: poetry run pylint farmos_ext
 
   Test:
     runs-on: ubuntu-latest
@@ -35,7 +35,7 @@ jobs:
         HOST: ${{ secrets.FARMOS_HOST }}
         USER: ${{ secrets.FARMOS_USER }}
         PASS: ${{ secrets.FARMOS_PASS }}
-    - run: poetry run coverage run --source=farmer -m pytest
+    - run: poetry run coverage run --source=farmos_ext -m pytest
     - run: poetry run coveralls --service=github
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
