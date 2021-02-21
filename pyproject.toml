@@ -11,7 +11,7 @@ farmOS = "^0.2.0"
 colorama = "^0.4.4"
 Pygments = "^2.7.4"
 click = "^7.1.2"
-prompt-toolkit = "^3.0.14"
+prompt-toolkit = "^3.0.16"
 fuzzyfinder = "^2.1.0"
 matplotlib = "^3.3.4"
 
