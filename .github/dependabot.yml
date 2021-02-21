@@ -13,6 +13,9 @@ updates:
       - "dependencies"
       - "python"
       - "automerge"
+    commit-message:
+      prefix: "fix(dep):"
+      prefix-development: "chore(dep):"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -23,3 +26,6 @@ updates:
       - "dependencies"
       - "github_actions"
       - "automerge"
+    commit-message:
+      prefix: "chore(dep):"
+      prefix-development: "chore(dep):"
