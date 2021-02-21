@@ -2,7 +2,7 @@
 from datetime import datetime
 
 import pytest
-from farmer import Farm
+from farmos_ext import Farm
 
 
 @pytest.mark.skip(reason="Need to normalize timezone for testing on CI.")

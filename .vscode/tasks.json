@@ -13,7 +13,7 @@
                 "--cov-report",
                 "xml:cov.xml",
                 "--cov",
-                "farmer",
+                "farmos_ext",
                 "tests/unit"
             ],
             "group": {
@@ -31,7 +31,7 @@
                 "--cov-report",
                 "xml:cov.xml",
                 "--cov",
-                "farmer",
+                "farmos_ext",
                 "tests/integration"
             ]
         },
@@ -45,7 +45,7 @@
                 "--cov-report",
                 "xml:cov.xml",
                 "--cov",
-                "farmer"
+                "farmos_ext"
             ]
         },
     ]

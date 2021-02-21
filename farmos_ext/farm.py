@@ -6,13 +6,13 @@ import os
 from datetime import datetime
 from typing import Dict, Iterable, Iterator, List, Type, Union
 
-from farmer.area import Area
-from farmer.asset import Asset, Equipment, Planting
-from farmer.log import (Activity, Birth, Harvest, Input, Log, Maintenance,
-                        Medical, Observation, Purchase, Sale, Seeding,
-                        SoilTest, Transplanting)
-from farmer.others import Content, Quantity
-from farmer.term import Crop, CropFamily, Season, Term, Unit
+from farmos_ext.area import Area
+from farmos_ext.asset import Asset, Equipment, Planting
+from farmos_ext.log import (Activity, Birth, Harvest, Input, Log, Maintenance,
+                            Medical, Observation, Purchase, Sale, Seeding,
+                            SoilTest, Transplanting)
+from farmos_ext.others import Content, Quantity
+from farmos_ext.term import Crop, CropFamily, Season, Term, Unit
 from farmOS import farmOS  # pylint: disable=wrong-import-order
 from farmOS.client import BaseAPI  # pylint: disable=wrong-import-order
 

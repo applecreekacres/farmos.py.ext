@@ -4,12 +4,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Dict, Iterator, List, Optional
 
-from farmer.area import Area
-from farmer.asset import Asset, Equipment
-from farmer.farmobj import FarmObj
-from farmer.file import File
-from farmer.others import Inventory, Quantity, Soil
-from farmer.term import Category, Unit
+from farmos_ext.area import Area
+from farmos_ext.asset import Asset, Equipment
+from farmos_ext.farmobj import FarmObj
+from farmos_ext.file import File
+from farmos_ext.others import Inventory, Quantity, Soil
+from farmos_ext.term import Category, Unit
 
 
 # pylint: disable=too-many-public-methods

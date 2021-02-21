@@ -1,2 +1,2 @@
 
-from farmer.reporting.rstreport import RstReporter
+from farmos_ext.reporting.rstreport import RstReporter

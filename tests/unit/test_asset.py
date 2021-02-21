@@ -1,12 +1,12 @@
 from datetime import date, datetime
-from farmer.term import Crop, Season
+from farmos_ext.term import Crop, Season
 import mock
 from mock.mock import MagicMock
 
-from farmer.asset import Asset, Planting
+from farmos_ext.asset import Asset, Planting
 
 
-@mock.patch("farmer.Farm")
+@mock.patch("farmos_ext.Farm")
 def test_asset_empty(mock_farm: MagicMock):
 
     asset = Asset(mock_farm, {})
@@ -23,7 +23,7 @@ def test_asset_empty(mock_farm: MagicMock):
     assert not asset.changed
 
 
-@mock.patch("farmer.Farm")
+@mock.patch("farmos_ext.Farm")
 def test_asset_complete(mock_farm: MagicMock):
     created = datetime.now()
     changed = datetime(2020, 11, 8, 4, 29, 45)
@@ -52,7 +52,7 @@ def test_asset_complete(mock_farm: MagicMock):
     assert asset.archived.timestamp() == archived.timestamp()
 
 
-@mock.patch("farmer.Farm")
+@mock.patch("farmos_ext.Farm")
 def test_planting_empty(mock_farm:  MagicMock):
     mock_farm.terms.return_value = []
     planting = Planting(mock_farm, {})
@@ -64,7 +64,7 @@ def test_planting_empty(mock_farm:  MagicMock):
     mock_farm.terms.assert_called_with(None, Crop)
 
 
-@mock.patch("farmer.Farm")
+@mock.patch("farmos_ext.Farm")
 def test_planting_data(mock_farm: MagicMock):
 
     planting = Planting(mock_farm, {

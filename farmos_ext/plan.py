@@ -1,6 +1,6 @@
 
-from farmer.farmobj import FarmObj
-from farmer.term import Season
+from farmos_ext.farmobj import FarmObj
+from farmos_ext.term import Season
 
 
 class Plan(FarmObj):

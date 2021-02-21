@@ -1,6 +1,6 @@
 
-from farmer.farm import Farm
-from farmer.farmobj import FarmObj
+from farmos_ext.farm import Farm
+from farmos_ext.farmobj import FarmObj
 
 
 def test_farmobj_creation():

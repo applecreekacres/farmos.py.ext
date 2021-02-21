@@ -1,6 +1,6 @@
 import mock
-from farmer import Farm
-from farmer.others import Content, Inventory, Measure, Quantity
+from farmos_ext import Farm
+from farmos_ext.others import Content, Inventory, Measure, Quantity
 
 
 def test_quantity():
@@ -34,7 +34,7 @@ def test_inventory():
     }
 
 
-@mock.patch("farmer.Farm")
+@mock.patch("farmos_ext.Farm")
 def test_content_empty(mock_farm):
     content = Content(mock_farm, {})
     assert not content.api_version
@@ -46,7 +46,7 @@ def test_content_empty(mock_farm):
     assert not content.resources
 
 
-@mock.patch("farmer.Farm")
+@mock.patch("farmos_ext.Farm")
 def test_content_not_empty(mock_farm):
     content = Content(mock_farm, {
         "api_version": "1.4",

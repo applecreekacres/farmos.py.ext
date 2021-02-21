@@ -1,13 +1,13 @@
 
 from datetime import datetime
-from farmer.area import Area
-from farmer.asset import Asset, Equipment
+from farmos_ext.area import Area
+from farmos_ext.asset import Asset, Equipment
 from mock import patch
 from mock.mock import MagicMock
-from farmer.log import Log
+from farmos_ext.log import Log
 
 
-@patch("farmer.Farm")
+@patch("farmos_ext.Farm")
 def test_log_empty(mock_farm: MagicMock):
     log = Log(mock_farm, {})
 
@@ -32,7 +32,7 @@ def test_log_empty(mock_farm: MagicMock):
     assert not log.inventory
 
 
-@patch("farmer.Farm")
+@patch("farmos_ext.Farm")
 def test_log_data(mock_farm: MagicMock):
     timstamp = datetime.now()
     created = datetime(2020, 11, 9, 6, 44, 23)

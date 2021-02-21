@@ -1,10 +1,10 @@
 import mock
 from mock.mock import MagicMock
 
-from farmer.area import Area
+from farmos_ext.area import Area
 
 
-@mock.patch("farmer.Farm")
+@mock.patch("farmos_ext.Farm")
 def test_area_empty(mock_farm: MagicMock):
     mock_farm.assets.return_value = []
     mock_farm.areas.return_value = []
@@ -23,7 +23,7 @@ def test_area_empty(mock_farm: MagicMock):
     mock_farm.assets.assert_called_with(None)
 
 
-@mock.patch("farmer.Farm")
+@mock.patch("farmos_ext.Farm")
 def test_area_not_empty(mock_farm: MagicMock):
     area = Area(mock_farm, {
         "tid": '4',

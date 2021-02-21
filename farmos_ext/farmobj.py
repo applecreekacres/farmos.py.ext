@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, Optional, Type
 
 if TYPE_CHECKING:
-    from farmer.farm import Farm  # pylint: disable=cyclic-import
+    from farmos_ext.farm import Farm  # pylint: disable=cyclic-import
 
 
 class FarmObj():
