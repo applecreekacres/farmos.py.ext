@@ -487,7 +487,7 @@ six = "*"
 
 [[package]]
 name = "python-semantic-release"
-version = "7.15.0"
+version = "7.15.4"
 description = "Automatic Semantic Versioning for Python projects"
 category = "dev"
 optional = false
@@ -499,7 +499,7 @@ click-log = ">=0.3,<1"
 dotty-dict = ">=1.3.0,<2"
 gitpython = ">=3.0.8,<4"
 invoke = ">=1.4.1,<2"
-python-gitlab = ">=1.10,<2"
+python-gitlab = ">=1.10,<3"
 requests = ">=2.25,<3"
 semver = ">=2.10,<3"
 tomlkit = ">=0.7.0,<1.0.0"
@@ -742,7 +742,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "c963457d5fe342258fabf985804d4874342382f56c8c98dee88b96fbf620f7ab"
+content-hash = "c48bb7645e1621748e444519baff3180aac70bb3765fad0795b19e21940b1c74"
 
 [metadata.files]
 astroid = [
@@ -1035,8 +1035,8 @@ python-gitlab = [
     {file = "python_gitlab-1.15.0-py3-none-any.whl", hash = "sha256:51ad36873b5c20cd21d9373db0936fb99c521575668320025d0fb519398d2e17"},
 ]
 python-semantic-release = [
-    {file = "python-semantic-release-7.15.0.tar.gz", hash = "sha256:a0ffd462bd42c5e0c41363b3c66c707ef4ad181bebc2f81145debbce9438e713"},
-    {file = "python_semantic_release-7.15.0-py3-none-any.whl", hash = "sha256:04835c4e32db24387bcab3aac0a11892b274f00206e360abfa4d8152b082d0f1"},
+    {file = "python-semantic-release-7.15.4.tar.gz", hash = "sha256:cb2a02a35c48d8ea81b83c3d913ee0bf5f4e26e97f4cbc8f25930e4a80792eae"},
+    {file = "python_semantic_release-7.15.4-py3-none-any.whl", hash = "sha256:a62ff8a9c909737fb45adb1c90dfa4938eb0e329831b91a26b7b586b378e4f94"},
 ]
 pywin32-ctypes = [
     {file = "pywin32-ctypes-0.2.0.tar.gz", hash = "sha256:24ffc3b341d457d48e8922352130cf2644024a4ff09762a2261fd34c36ee5942"},
