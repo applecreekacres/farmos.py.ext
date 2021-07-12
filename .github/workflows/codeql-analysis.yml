@@ -40,7 +40,7 @@ jobs:
     - uses: actions/setup-python@v2.2.1
       with:
         python-version: 3.7
-    - uses: Gr1N/setup-poetry@v4
+    - uses: Gr1N/setup-poetry@v6
     - run: |
         poetry install
         echo "CODEQL_PYTHON=$(which python)" >> $GITHUB_ENV
